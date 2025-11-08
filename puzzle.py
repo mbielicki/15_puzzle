@@ -2,28 +2,29 @@ import numpy as np
 import random
 
 class Puzzle:
-    def __init__(self, size=4):
+    def __init__(self, size=4, data: list = None) -> None:
         self.size = size
         # build the solved/correct board first
         items = list(range(1, self.size * self.size)) + [0]
         self.correct = np.array(items).reshape((self.size, self.size)).T
 
-        # initialize state
-        self.array = np.zeros((size, size), dtype=int)
+        if data is None:
+            self.array = self.correct.copy()
+        else:
+            #TODO: validate data
+            self.array = np.array(data).reshape((self.size, self.size)).T
+
         self.history = []
 
-        # shuffle from the solved state
-        self.shuffle()
-
-    def shuffle(self) -> None:
-        # Start from the solved configuration and perform 100 random moves.
+    def shuffle(self, n: int) -> None:
+        # Start from the solved configuration and perform n random moves.
         # Avoid immediately reversing the previous move when possible.
         self.array = self.correct.copy()
 
         opposite = {"R": "L", "L": "R", "U": "D", "D": "U"}
         prev_move = None
 
-        for _ in range(10):
+        for _ in range(n):
             allowed = self.allowed_moves()
 
             # try to avoid reversing the previous move
