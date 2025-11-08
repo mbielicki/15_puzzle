@@ -10,19 +10,19 @@ def bfs(puzzle: Puzzle) -> Puzzle:
         current_puzzle = queue.pop(0)
         if current_puzzle.is_solved():
             return current_puzzle
-        if current_puzzle.can_move("up"):
+        if current_puzzle.can_move("U"):
             new_puzzle = current_puzzle.copy()
             new_puzzle.up()
             queue.append(new_puzzle)
-        if current_puzzle.can_move("down"):
+        if current_puzzle.can_move("D"):
             new_puzzle = current_puzzle.copy()
             new_puzzle.down()
             queue.append(new_puzzle)
-        if current_puzzle.can_move("left"):
+        if current_puzzle.can_move("L"):
             new_puzzle = current_puzzle.copy()
             new_puzzle.left()
             queue.append(new_puzzle)
-        if current_puzzle.can_move("right"):
+        if current_puzzle.can_move("R"):
             new_puzzle = current_puzzle.copy()
             new_puzzle.right()
             queue.append(new_puzzle)
