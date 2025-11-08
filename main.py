@@ -1,4 +1,5 @@
 from puzzle import Puzzle
+from algorithms.dfs import dfs
 from algorithms.bfs import bfs
 
 if __name__ == "__main__":
@@ -6,7 +7,7 @@ if __name__ == "__main__":
     print("Initial puzzle state:")
     print(puzzle)
     
-    solved = bfs(puzzle)
+    solved = dfs(puzzle)
     
     print("\nSolved puzzle state:")
     print(solved)
