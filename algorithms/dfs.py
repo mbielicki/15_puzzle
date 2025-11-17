@@ -2,7 +2,7 @@ from puzzle import Puzzle
 import logging
 
 
-def dfs_iterative(puzzle: Puzzle, depth_limit: int, logger: logging.Logger = None) -> Puzzle:
+def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Puzzle:
     stack = [puzzle]
     i = 0
 
@@ -25,33 +25,29 @@ def dfs_iterative(puzzle: Puzzle, depth_limit: int, logger: logging.Logger = Non
                 logger.debug(f"Iterative - Depth limit {depth_limit} reached, skipping expansion")
             continue
 
+        # Define move operations
+        move_operations = {
+            "U": (current_puzzle.can_move("U") and current_puzzle.previous_move() != "D", lambda p: p.up()),
+            "D": (current_puzzle.can_move("D") and current_puzzle.previous_move() != "U", lambda p: p.down()),
+            "L": (current_puzzle.can_move("L") and current_puzzle.previous_move() != "R", lambda p: p.left()),
+            "R": (current_puzzle.can_move("R") and current_puzzle.previous_move() != "L", lambda p: p.right())
+        }
+
         moves_added = []
-        if current_puzzle.can_move("R") and current_puzzle.previous_move() != "L":
-            new_puzzle = current_puzzle.copy()
-            new_puzzle.right()
-            stack.append(new_puzzle)
-            moves_added.append("R")
-        if current_puzzle.can_move("L") and current_puzzle.previous_move() != "R":
-            new_puzzle = current_puzzle.copy()
-            new_puzzle.left()
-            stack.append(new_puzzle)
-            moves_added.append("L")
-        if current_puzzle.can_move("D") and current_puzzle.previous_move() != "U":
-            new_puzzle = current_puzzle.copy()
-            new_puzzle.down()
-            stack.append(new_puzzle)
-            moves_added.append("D")
-        if current_puzzle.can_move("U") and current_puzzle.previous_move() != "D":
-            new_puzzle = current_puzzle.copy()
-            new_puzzle.up()
-            stack.append(new_puzzle)
-            moves_added.append("U")
+        for move in order:
+            if move in move_operations:
+                can_move, operation = move_operations[move]
+                if can_move:
+                    new_puzzle = current_puzzle.copy()
+                    operation(new_puzzle)
+                    stack.append(new_puzzle)
+                    moves_added.append(move)
         
         if logger and moves_added:
             logger.debug(f"Iterative - Added moves: {moves_added}, new stack size: {len(stack)}")
 
 
-def dfs(puzzle: Puzzle, depth_limit: int, logger: logging.Logger = None) -> Puzzle:
+def dfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Puzzle:
     iteration_count = [0]  # Using list to allow modification in nested function
     
     def dfs_recursive(current_puzzle: Puzzle, depth: int) -> Puzzle:
@@ -72,30 +68,23 @@ def dfs(puzzle: Puzzle, depth_limit: int, logger: logging.Logger = None) -> Puzz
                 logger.debug(f"Recursive - Depth limit {depth_limit} reached at depth {depth}, returning None")
             return None
         
-        # Try all possible moves
-        moves = []
-        if current_puzzle.can_move("U") and current_puzzle.previous_move() != "D":
-            moves.append("U")
-        if current_puzzle.can_move("D") and current_puzzle.previous_move() != "U":
-            moves.append("D")
-        if current_puzzle.can_move("L") and current_puzzle.previous_move() != "R":
-            moves.append("L")
-        if current_puzzle.can_move("R") and current_puzzle.previous_move() != "L":
-            moves.append("R")
+        # Define move operations
+        move_operations = {
+            "U": (current_puzzle.can_move("U") and current_puzzle.previous_move() != "D", lambda p: p.up()),
+            "D": (current_puzzle.can_move("D") and current_puzzle.previous_move() != "U", lambda p: p.down()),
+            "L": (current_puzzle.can_move("L") and current_puzzle.previous_move() != "R", lambda p: p.left()),
+            "R": (current_puzzle.can_move("R") and current_puzzle.previous_move() != "L", lambda p: p.right())
+        }
+        
+        # Try moves in the specified order
+        moves = [move for move in order if move in move_operations and move_operations[move][0]]
         
         if logger and moves:
             logger.debug(f"Recursive - Trying moves: {moves}")
         
         for move in moves:
             new_puzzle = current_puzzle.copy()
-            if move == "U":
-                new_puzzle.up()
-            elif move == "D":
-                new_puzzle.down()
-            elif move == "L":
-                new_puzzle.left()
-            elif move == "R":
-                new_puzzle.right()
+            move_operations[move][1](new_puzzle)
             
             if logger:
                 logger.debug(f"Recursive - Exploring move {move}")
