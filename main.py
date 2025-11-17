@@ -1,3 +1,4 @@
+from algorithms.iddfs import iddfs
 from puzzle import Puzzle
 from algorithms.dfs import dfs, dfs_iterative
 from algorithms.bfs import bfs
@@ -11,7 +12,7 @@ if __name__ == "__main__":
     
     # Configure logging with timestamp-based filename
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_file = f'logs/dfs_recursive_{timestamp}.log'
+    log_file = f'logs/iddfs_{timestamp}.log'
     
     logging.basicConfig(
         level=logging.DEBUG,
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     print("Initial puzzle state:")
     print(puzzle)
     
-    solved = dfs(puzzle, 20, logger)
+    solved = iddfs(puzzle, 20, logger)
 
     if solved is None:
         print("\nNo solution found within the depth limit.")
