@@ -4,19 +4,22 @@ import heapq
 from algorithms.heuristics import manhattan_distance
 
 
-def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Puzzle:
-    """A* algorithm using Manhattan distance heuristic.
+def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Puzzle:
+    """A* algorithm using a heuristic function.
     
     Uses a priority queue where states are prioritized by f(n) = g(n) + h(n):
     - g(n): actual cost from start (number of moves so far)
-    - h(n): heuristic estimate to goal (Manhattan distance)
+    - h(n): heuristic estimate to goal
     - f(n): estimated total cost through this state
     """
+    if heuristic is None:
+        heuristic = manhattan_distance
+    
     # Priority queue: (f_value, counter, puzzle)
     # counter ensures FIFO ordering for ties in f value
     counter = 0
     g = 0  # initial cost
-    h = manhattan_distance(puzzle)
+    h = heuristic(puzzle)
     f = g + h
     pq = [(f, counter, puzzle)]
     visited = set()
@@ -27,8 +30,6 @@ def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: loggin
         current_f, _, current_puzzle = heapq.heappop(pq)
         current_g = len(current_puzzle.history)
         current_h = current_f - current_g
-        
-        print(f"\rA* iteration {i}, queue size: {len(pq)}, f={current_f} (g={current_g}, h={current_h})       ", end="")
         
         if logger:
             logger.debug(f"A* - Iteration {i}: popped puzzle with f={current_f} (g={current_g}, h={current_h}), queue size: {len(pq)}, history: {' '.join(current_puzzle.history) if current_puzzle.history else 'empty'}")
@@ -67,7 +68,7 @@ def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: loggin
                     new_puzzle = current_puzzle.copy()
                     operation(new_puzzle)
                     new_g = len(new_puzzle.history)
-                    new_h = manhattan_distance(new_puzzle)
+                    new_h = heuristic(new_puzzle)
                     new_f = new_g + new_h
                     counter += 1
                     heapq.heappush(pq, (new_f, counter, new_puzzle))

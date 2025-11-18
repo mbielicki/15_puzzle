@@ -22,7 +22,7 @@ class SMAStarNode:
         return self.g > other.g
 
 
-def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: str = "UDLR", logger: logging.Logger = None) -> Puzzle:
+def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Puzzle:
     """SMA* (Simplified Memory-bounded A*) algorithm.
     
     Memory-efficient variant of A* that limits the number of nodes in memory.
@@ -34,10 +34,14 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
         depth_limit: Maximum depth to search
         max_nodes: Maximum number of nodes to keep in memory
         order: Order of move exploration (default "UDLR")
+        heuristic: Heuristic function to use (default manhattan_distance)
         logger: Optional logger for debugging
     """
+    if heuristic is None:
+        heuristic = manhattan_distance
+    
     # Initialize with root node
-    h = manhattan_distance(puzzle)
+    h = heuristic(puzzle)
     root = SMAStarNode(puzzle, g=0, h=h)
     
     # Priority queue for open nodes (to be expanded)
@@ -58,8 +62,6 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
         # Get the most promising node
         current_node = heapq.heappop(open_heap)
         current_puzzle = current_node.puzzle
-        
-        print(f"\rSMA* iteration {iteration}, nodes in memory: {len(nodes_in_memory)}, f={current_node.f} (g={current_node.g}, h={current_node.h})       ", end="")
         
         if logger:
             logger.debug(f"SMA* - Iteration {iteration}: expanded node with f={current_node.f} (g={current_node.g}, h={current_node.h}), nodes in memory: {len(nodes_in_memory)}, history: {' '.join(current_puzzle.history) if current_puzzle.history else 'empty'}")
@@ -103,7 +105,7 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
                         continue
                     
                     new_g = len(new_puzzle.history)
-                    new_h = manhattan_distance(new_puzzle)
+                    new_h = heuristic(new_puzzle)
                     new_node = SMAStarNode(new_puzzle, new_g, new_h, parent=current_node)
                     successors.append((new_state, new_node))
         

@@ -4,16 +4,19 @@ import heapq
 from algorithms.heuristics import manhattan_distance
 
 
-def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Puzzle:
-    """Best First Search using Manhattan distance heuristic.
+def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Puzzle:
+    """Best First Search using a heuristic function.
     
-    Uses a priority queue where states are prioritized by their Manhattan distance
+    Uses a priority queue where states are prioritized by their heuristic value
     from the goal state (lower distance = higher priority).
     """
+    if heuristic is None:
+        heuristic = manhattan_distance
+    
     # Priority queue: (heuristic_value, counter, puzzle)
     # counter ensures FIFO ordering for ties in heuristic value
     counter = 0
-    initial_h = manhattan_distance(puzzle)
+    initial_h = heuristic(puzzle)
     pq = [(initial_h, counter, puzzle)]
     visited = set()
     i = 0
@@ -21,8 +24,6 @@ def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", log
     while pq:
         i += 1
         h, _, current_puzzle = heapq.heappop(pq)
-        
-        print(f"\rBest-First Search iteration {i}, queue size: {len(pq)}, h={h}, moves: {len(current_puzzle.history)}       ", end="")
         
         if logger:
             logger.debug(f"BestFS - Iteration {i}: popped puzzle with h={h}, moves={len(current_puzzle.history)}, queue size: {len(pq)}, history: {' '.join(current_puzzle.history) if current_puzzle.history else 'empty'}")
@@ -60,7 +61,7 @@ def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", log
                 if can_move:
                     new_puzzle = current_puzzle.copy()
                     operation(new_puzzle)
-                    new_h = manhattan_distance(new_puzzle)
+                    new_h = heuristic(new_puzzle)
                     counter += 1
                     heapq.heappush(pq, (new_h, counter, new_puzzle))
                     moves_added.append(move)
