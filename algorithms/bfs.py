@@ -8,7 +8,6 @@ def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
 
     while queue:
         i+= 1
-        print(f"\rBFS iteration {i}, queue size: {len(queue)}       ", end="")
         current_puzzle = queue.pop(0)
         
         if logger:

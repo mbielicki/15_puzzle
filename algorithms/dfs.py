@@ -9,7 +9,6 @@ def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger:
     while stack:
         i += 1
         current_puzzle = stack.pop()
-        print(f"\rDFS iteration {i}, stack size: {len(stack)}, moves: {len(current_puzzle.history)}       ", end="")
         
         if logger:
             logger.debug(f"Iterative - Iteration {i}: popped puzzle with {len(current_puzzle.history)} moves, stack size: {len(stack)}, history: {' '.join(current_puzzle.history) if current_puzzle.history else 'empty'}")
@@ -52,7 +51,6 @@ def dfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
     
     def dfs_recursive(current_puzzle: Puzzle, depth: int) -> Puzzle:
         iteration_count[0] += 1
-        print(f"\rDFS iteration {iteration_count[0]}, depth: {depth}, moves: {len(current_puzzle.history)}       ", end="")
         
         if logger:
             logger.debug(f"Recursive - Iteration {iteration_count[0]}: depth={depth}, moves={len(current_puzzle.history)}, history: {' '.join(current_puzzle.history) if current_puzzle.history else 'empty'}")
