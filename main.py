@@ -36,10 +36,17 @@ def read_puzzle():
     Returns:
         Puzzle: Initialized puzzle object
     """
-    # Read dimensions
+    # Read dimensions - handle both "4 4" and "4" followed by "4" formats
     first_line = input().strip().split()
     rows = int(first_line[0])
-    cols = int(first_line[1])
+    
+    if len(first_line) > 1:
+        # Dimensions on same line
+        cols = int(first_line[1])
+    else:
+        # Dimensions on separate lines
+        second_line = input().strip().split()
+        cols = int(second_line[0])
     
     if rows != cols:
         print("Error: Only square puzzles are supported", file=sys.stderr)
