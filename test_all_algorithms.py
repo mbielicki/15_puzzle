@@ -1,10 +1,10 @@
-"""Test all algorithms on puzzle_4x4_8moves.txt and collect results."""
+"""Test all algorithms on puzzle_4x4_10moves.txt and collect results."""
 
 import subprocess
 import time
 import re
 
-puzzle_file = "inputs/puzzle_4x4_8moves.txt"
+puzzle_file = "inputs/puzzle_4x4_10moves.txt"
 python_exe = "C:/dev/15_puzzle/.venv/Scripts/python.exe"
 
 algorithms = [

@@ -1,0 +1,23 @@
+Algorithm                      Moves    Iterations      Time (s)     Status
+----------------------------------------------------------------------------------------------------
+BFS UDLR                       10       4,848           1.95         SUCCESS
+BFS DULR                       10       4,817           1.87         SUCCESS
+BFS LRUD                       10       3,470           1.42         SUCCESS
+BFS RDUL                       10       3,981           1.55         SUCCESS
+DFS UDLR                       12       201,089         27.77        SUCCESS
+DFS DULR                       12       203,465         27.93        SUCCESS
+DFS LRUD                       10       95,493          13.01        SUCCESS
+DFS RDUL                       10       11,120          1.72         SUCCESS
+IDDFS UDLR                     10       5,109           1.54         SUCCESS
+IDDFS DULR                     10       4,999           1.55         SUCCESS
+IDDFS LRUD                     10       2,185           1.14         SUCCESS
+A* h=0                         10       4,848           1.30         SUCCESS
+A* h=1 (Manhattan)             10       14              0.21         SUCCESS
+A* h=2 (Hamming)               10       24              0.21         SUCCESS
+Best-First h=0                 10       4,848           1.29         SUCCESS
+Best-First h=1 (Manhattan)     10       11              0.21         SUCCESS
+Best-First h=2 (Hamming)       10       20              0.20         SUCCESS
+SMA* h=0                       10       4,821           1.46         SUCCESS
+SMA* h=1 (Manhattan)           10       11              0.23         SUCCESS
+SMA* h=2 (Hamming)             10       19              0.21         SUCCESS
+====================================================================================================
