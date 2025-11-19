@@ -50,23 +50,42 @@ def save_puzzle(puzzle, filename):
 
 
 def main():
-    args = {
-        'size': 4,
-        'moves': 50,
-        'name': None
-    }
+    parser = argparse.ArgumentParser(
+        description='Generate a shuffled puzzle and save it to inputs/ directory',
+        add_help=True
+    )
+    parser.add_argument(
+        '--size', '-s',
+        type=int,
+        default=4,
+        help='Size of the puzzle (default: 4 for 4x4)'
+    )
+    parser.add_argument(
+        '--moves', '-m',
+        type=int,
+        default=100,
+        help='Number of random moves to apply (default: 100)'
+    )
+    parser.add_argument(
+        '--name', '-n',
+        type=str,
+        default=None,
+        help='Output filename (default: puzzle_SIZExSIZE_MOVES.txt)'
+    )
+    
+    args = parser.parse_args()
     
     # Generate puzzle
-    print(f"Generating {args['size']}x{args['size']} puzzle with {args['moves']} random moves...")
-    puzzle = generate_shuffled_puzzle(args['size'], args['moves'])
+    print(f"Generating {args.size}x{args.size} puzzle with {args.moves} random moves...")
+    puzzle = generate_shuffled_puzzle(args.size, args.moves)
     
     # Determine output filename
-    if args['name']:
-        filename = f"inputs/{args['name']}"
+    if args.name:
+        filename = f"inputs/{args.name}"
         if not filename.endswith('.txt'):
             filename += '.txt'
     else:
-        filename = f"inputs/puzzle_{args['size']}x{args['size']}_{args['moves']}moves.txt"
+        filename = f"inputs/puzzle_{args.size}x{args.size}_{args.moves}moves.txt"
     
     # Save puzzle
     save_puzzle(puzzle, filename)
