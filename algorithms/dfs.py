@@ -38,10 +38,10 @@ def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger:
                     new_puzzle = current_puzzle.copy()
                     operation(new_puzzle)
                     stack.append(new_puzzle)
-                    moves_added.append(move)
-        
-        if logger and moves_added:
-            logger.debug(f"Iterative - Added moves: {moves_added}, new stack size: {len(stack)}")
+    
+    if logger:
+        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}")
+    return None
 
 
 def dfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Puzzle:
@@ -51,17 +51,15 @@ def dfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
         iteration_count[0] += 1
         
         if logger:
-            logger.debug(f"Recursive - Iteration {iteration_count[0]}: depth={depth}, moves={len(current_puzzle.history)}, history: {' '.join(current_puzzle.history) if current_puzzle.history else 'empty'}")
+            logger.info(f"Iter {iteration_count[0]}: depth={len(current_puzzle.history)}")
         
         if current_puzzle.is_solved():
             if logger:
-                logger.info(f"Recursive - Solution found at iteration {iteration_count[0]}, depth={depth}, moves={len(current_puzzle.history)}, history: {' '.join(current_puzzle.history)}")
+                logger.info(f"Solution found! Iterations: {iteration_count[0]}, Moves: {len(current_puzzle.history)}")
             return current_puzzle
         
         # Skip if depth limit exceeded
         if len(current_puzzle.history) >= depth_limit:
-            if logger:
-                logger.debug(f"Recursive - Depth limit {depth_limit} reached at depth {depth}, returning None")
             return None
         
         # Define move operations

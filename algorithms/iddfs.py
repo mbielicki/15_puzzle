@@ -45,9 +45,9 @@ def iddfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging
         
         if result is not None:
             if logger:
-                logger.info(f"Solution found! Total iterations: {total_iterations}, Moves: {len(result.history)}")
+                logger.info(f"Solution found! Iterations: {total_iterations}, Moves: {len(result.history)}")
             return result
     
     if logger:
-        logger.info(f"IDDFS - No solution found. Total iterations: {total_iterations}")
+        logger.info(f"No solution found. Iterations: {total_iterations}")
     return None

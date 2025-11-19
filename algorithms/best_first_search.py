@@ -57,11 +57,11 @@ def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heu
                 if can_move:
                     new_puzzle = current_puzzle.copy()
                     operation(new_puzzle)
-                    new_h = heuristic(new_puzzle)
+                    h = heuristic(new_puzzle)
                     counter += 1
-                    heapq.heappush(pq, (new_h, counter, new_puzzle))
-                    moves_added.append(move)
+                    heapq.heappush(pq, (h, counter, new_puzzle))
     
     if logger:
-        logger.info(f"BestFS - No solution found within depth limit {depth_limit}")
+        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}")
+    return None
     return None

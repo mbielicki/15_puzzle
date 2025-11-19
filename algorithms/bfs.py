@@ -33,7 +33,6 @@ def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
             "R": (current_puzzle.can_move("R") and current_puzzle.previous_move() != "L", lambda p: p.right())
         }
 
-        moves_added = []
         for move in order:
             if move in move_operations:
                 can_move, operation = move_operations[move]
@@ -41,7 +40,7 @@ def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
                     new_puzzle = current_puzzle.copy()
                     operation(new_puzzle)
                     queue.append(new_puzzle)
-                    moves_added.append(move)
-        
-        if logger and moves_added:
-            logger.debug(f"BFS - Added moves: {moves_added}, new queue size: {len(queue)}")
+    
+    if logger:
+        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}")
+    return None

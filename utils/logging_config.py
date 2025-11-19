@@ -29,17 +29,17 @@ def setup_logging(algorithm_name):
     
     # Create file handler with unbuffered writing
     file_handler = FlushFileHandler(log_filename, mode='w')
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
     
-    # Create console handler - output to stdout for real-time visibility
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.DEBUG)
+    # Create console handler - output to stderr to not interfere with stdout results
+    console_handler = logging.StreamHandler(sys.stderr)
+    console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
     
     # Configure root logger
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         handlers=[file_handler, console_handler],
         force=True
     )

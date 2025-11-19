@@ -61,20 +61,23 @@ def solve_puzzle(puzzle, algorithm, parameter, logger, depth_limit=15):
             return iddfs(puzzle, depth_limit, order, logger)
     
     elif algorithm in ['bf', 'astar', 'sma']:
-        # For heuristic-based algorithms
+        # For heuristic-based algorithms - use larger depth limit
         heuristic_id = parameter
         heuristic = get_heuristic(heuristic_id)
         order = 'UDLR'  # Default order for heuristic searches
         logger.info(f"Using heuristic ID: {heuristic_id}")
         
+        # Use larger depth limit for informed search
+        informed_depth_limit = 50
+        
         if algorithm == 'bf':
             logger.info("Running Best-First Search")
-            return best_first_search(puzzle, depth_limit, order, heuristic, logger)
+            return best_first_search(puzzle, informed_depth_limit, order, heuristic, logger)
         elif algorithm == 'astar':
             logger.info("Running A* Search")
-            return a_star(puzzle, depth_limit, order, heuristic, logger)
+            return a_star(puzzle, informed_depth_limit, order, heuristic, logger)
         elif algorithm == 'sma':
             logger.info("Running SMA* Search")
-            return sma_star(puzzle, depth_limit, max_nodes=10000, order=order, heuristic=heuristic, logger=logger)
+            return sma_star(puzzle, informed_depth_limit, max_nodes=10000, order=order, heuristic=heuristic, logger=logger)
     
     return None

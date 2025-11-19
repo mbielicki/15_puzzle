@@ -68,8 +68,7 @@ def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None
                     new_f = new_g + new_h
                     counter += 1
                     heapq.heappush(pq, (new_f, counter, new_puzzle))
-                    moves_added.append(move)
     
     if logger:
-        logger.info(f"A* - No solution found within depth limit {depth_limit}")
+        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}")
     return None

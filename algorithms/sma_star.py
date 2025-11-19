@@ -135,5 +135,5 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
             nodes_in_memory[state] = node
     
     if logger:
-        logger.info(f"SMA* - No solution found within depth limit {depth_limit}")
+        logger.info(f"No solution found. Iterations: {iteration}, Depth limit: {depth_limit}")
     return None
