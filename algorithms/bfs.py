@@ -11,22 +11,18 @@ def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
         current_puzzle = queue.pop(0)
         
         if logger:
-            logger.debug(f"BFS - Iteration {i}: popped puzzle with {len(current_puzzle.history)} moves, queue size: {len(queue)}, history: {' '.join(current_puzzle.history) if current_puzzle.history else 'empty'}")
+            logger.info(f"Iter {i}: depth={len(current_puzzle.history)}, queue={len(queue)}, visited={len(visited)}")
         
         if current_puzzle.is_solved():
             if logger:
-                logger.info(f"BFS - Solution found at iteration {i} with {len(current_puzzle.history)} moves, history: {' '.join(current_puzzle.history)}")
+                logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}")
             return current_puzzle
         if current_puzzle.__repr__() in visited:
-            if logger:
-                logger.debug(f"BFS - Already visited, skipping")
             continue
         visited.add(current_puzzle.__repr__())
 
         # Skip if depth limit exceeded
         if len(current_puzzle.history) >= depth_limit:
-            if logger:
-                logger.debug(f"BFS - Depth limit {depth_limit} reached, skipping expansion")
             continue
 
         # Define move operations

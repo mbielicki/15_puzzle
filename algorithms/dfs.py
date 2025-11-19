@@ -11,17 +11,15 @@ def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger:
         current_puzzle = stack.pop()
         
         if logger:
-            logger.debug(f"Iterative - Iteration {i}: popped puzzle with {len(current_puzzle.history)} moves, stack size: {len(stack)}, history: {' '.join(current_puzzle.history) if current_puzzle.history else 'empty'}")
+            logger.info(f"Iter {i}: depth={len(current_puzzle.history)}, stack={len(stack)}")
         
         if current_puzzle.is_solved():
             if logger:
-                logger.info(f"Iterative - Solution found at iteration {i} with {len(current_puzzle.history)} moves, history: {' '.join(current_puzzle.history)}")
+                logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}")
             return current_puzzle
 
         # Skip if depth limit exceeded
         if len(current_puzzle.history) >= depth_limit:
-            if logger:
-                logger.debug(f"Iterative - Depth limit {depth_limit} reached, skipping expansion")
             continue
 
         # Define move operations

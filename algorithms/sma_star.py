@@ -64,12 +64,12 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
         current_puzzle = current_node.puzzle
         
         if logger:
-            logger.debug(f"SMA* - Iteration {iteration}: expanded node with f={current_node.f} (g={current_node.g}, h={current_node.h}), nodes in memory: {len(nodes_in_memory)}, history: {' '.join(current_puzzle.history) if current_puzzle.history else 'empty'}")
+            logger.info(f"Iter {iteration}: depth={len(current_puzzle.history)}, queue={len(open_heap)}, visited={len(visited)}, f={current_node.f}")
         
         # Goal test
         if current_puzzle.is_solved():
             if logger:
-                logger.info(f"SMA* - Solution found at iteration {iteration} with {len(current_puzzle.history)} moves, history: {' '.join(current_puzzle.history)}")
+                logger.info(f"Solution found! Iterations: {iteration}, Moves: {len(current_puzzle.history)}")
             return current_puzzle
         
         # Mark as visited
@@ -78,8 +78,6 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
         
         # Check depth limit
         if len(current_puzzle.history) >= depth_limit:
-            if logger:
-                logger.debug(f"SMA* - Depth limit {depth_limit} reached, skipping expansion")
             continue
         
         # Define move operations
@@ -131,17 +129,10 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
                             worst_node.parent.forgotten_f = worst_node.f
                         else:
                             worst_node.parent.forgotten_f = min(worst_node.parent.forgotten_f, worst_node.f)
-                    
-                    if logger:
-                        logger.debug(f"SMA* - Memory limit reached, removed node with f={worst_node.f}")
             
             # Add new node
             heapq.heappush(open_heap, node)
             nodes_in_memory[state] = node
-        
-        if logger and successors:
-            moves_added = [node.puzzle.history[-1] for _, node in successors]
-            logger.debug(f"SMA* - Added moves: {moves_added}, nodes in memory: {len(nodes_in_memory)}")
     
     if logger:
         logger.info(f"SMA* - No solution found within depth limit {depth_limit}")

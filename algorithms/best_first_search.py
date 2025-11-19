@@ -26,24 +26,20 @@ def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heu
         h, _, current_puzzle = heapq.heappop(pq)
         
         if logger:
-            logger.debug(f"BestFS - Iteration {i}: popped puzzle with h={h}, moves={len(current_puzzle.history)}, queue size: {len(pq)}, history: {' '.join(current_puzzle.history) if current_puzzle.history else 'empty'}")
+            logger.info(f"Iter {i}: depth={len(current_puzzle.history)}, queue={len(pq)}, visited={len(visited)}, h={h}")
         
         if current_puzzle.is_solved():
             if logger:
-                logger.info(f"BestFS - Solution found at iteration {i} with {len(current_puzzle.history)} moves, history: {' '.join(current_puzzle.history)}")
+                logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}")
             return current_puzzle
         
         state = current_puzzle.__repr__()
         if state in visited:
-            if logger:
-                logger.debug(f"BestFS - Already visited, skipping")
             continue
         visited.add(state)
 
         # Skip if depth limit exceeded
         if len(current_puzzle.history) >= depth_limit:
-            if logger:
-                logger.debug(f"BestFS - Depth limit {depth_limit} reached, skipping expansion")
             continue
 
         # Define move operations
@@ -65,9 +61,6 @@ def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heu
                     counter += 1
                     heapq.heappush(pq, (new_h, counter, new_puzzle))
                     moves_added.append(move)
-        
-        if logger and moves_added:
-            logger.debug(f"BestFS - Added moves: {moves_added}, new queue size: {len(pq)}")
     
     if logger:
         logger.info(f"BestFS - No solution found within depth limit {depth_limit}")
