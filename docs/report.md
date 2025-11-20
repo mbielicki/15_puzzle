@@ -238,3 +238,174 @@ Unlike standard orderings that use a fixed sequence throughout the search, RAND 
 - **Non-Deterministic**: Different results on each execution
 - **Exploration Diversity**: Avoids systematic bias of fixed orderings
 - **Variable Performance**: May find solutions quickly or slowly depending on random choices
+
+## 3. Informed Search Algorithms
+
+Informed search algorithms, also known as heuristic search algorithms, use domain-specific knowledge to guide the search toward the goal. Unlike uninformed search, these algorithms evaluate states using a heuristic function that estimates the distance or cost to reach the goal, allowing them to prioritize more promising paths.
+
+### 3.1 Best-First Search
+
+**Algorithm Description:**
+
+Best-First Search is a greedy search algorithm that uses a priority queue to explore states, always selecting the state that appears closest to the goal according to the heuristic function. It prioritizes states solely by their heuristic value h(n), without considering the cost to reach them.
+
+**Key Characteristics:**
+
+- **Completeness**: Complete if the state space is finite and a visited set is used
+- **Optimality**: Not guaranteed - being greedy, it may find suboptimal solutions
+- **Time Complexity**: O(b^d) in the worst case, but typically much better with good heuristics
+- **Space Complexity**: O(b^d) - stores frontier and visited states
+- **Greedy Nature**: Focuses exclusively on minimizing estimated distance to goal
+
+**Implementation Details:**
+
+The algorithm uses a priority queue (min-heap) where states are ordered by their heuristic value h(n). States with lower heuristic values (estimated to be closer to the goal) are explored first. A counter ensures FIFO ordering for states with identical heuristic values.
+
+**Performance:**
+
+Best-First Search can be very efficient with good heuristics but may get stuck in local minima. From our test results:
+- Best-First with Manhattan distance: 11 iterations
+- Best-First with Hamming distance: 20 iterations
+- Best-First with no heuristic (h=0): 4,848 iterations (equivalent to BFS)
+
+The dramatic reduction in iterations (from 4,848 to 11) demonstrates the power of effective heuristics.
+
+### 3.2 A* Search
+
+**Algorithm Description:**
+
+A* (pronounced "A-star") is an optimal search algorithm that combines the actual cost from the start with a heuristic estimate to the goal. It uses an evaluation function f(n) = g(n) + h(n), where:
+- **g(n)**: actual cost from the start state to state n (path length so far)
+- **h(n)**: heuristic estimate from state n to the goal
+- **f(n)**: estimated total cost of the solution through state n
+
+**Key Characteristics:**
+
+- **Completeness**: Complete if a solution exists
+- **Optimality**: Guaranteed optimal if the heuristic is admissible (never overestimates)
+- **Time Complexity**: O(b^d) in the worst case, but typically much better with good heuristics
+- **Space Complexity**: O(b^d) - must maintain frontier and visited states
+- **Admissible Heuristics**: Requires h(n) ≤ true cost to goal for optimality guarantee
+
+**Why A* is Optimal:**
+
+A* is optimal when the heuristic is admissible (never overestimates the true cost). The algorithm maintains the following invariant: if there exists a path of cost C to the goal, A* will find it before exploring any path with f(n) > C. This ensures that the first solution found is optimal.
+
+**Implementation Details:**
+
+States are prioritized by f(n) = g(n) + h(n). The algorithm tracks the actual path cost g(n) for each state and combines it with the heuristic estimate h(n). A visited set prevents re-exploration of states.
+
+**Performance:**
+
+A* with good heuristics dramatically outperforms uninformed search:
+- A* with Manhattan distance: 14 iterations, max frontier 18
+- A* with Hamming distance: 24 iterations, max frontier 31
+- A* with no heuristic (h=0): 4,848 iterations, max frontier 5,061 (equivalent to BFS)
+
+The Manhattan distance heuristic reduces iterations by 99.7% compared to uninformed search (14 vs 4,848).
+
+### 3.3 Simplified Memory-Bounded A* (SMA*)
+
+**Algorithm Description:**
+
+SMA* is a memory-limited variant of A* designed for scenarios where memory constraints prevent storing all frontier nodes. When the number of nodes in memory reaches a specified limit, SMA* removes the worst (highest f-value) leaf nodes. It stores the best forgotten f-value in the parent node, allowing regeneration of pruned subtrees if needed.
+
+**Key Characteristics:**
+
+- **Completeness**: Complete if enough memory exists to store the solution path
+- **Optimality**: Optimal like A* if the heuristic is admissible and memory is sufficient
+- **Time Complexity**: O(b^d) but may re-explore pruned subtrees
+- **Space Complexity**: O(memory limit) - bounded by user-specified constraint
+- **Memory Management**: Prunes worst leaf nodes when memory is full
+
+**How It Works:**
+
+1. Maintains a node limit (default 10,000 nodes in our implementation)
+2. When memory is full, identifies the worst (highest f-value) leaf node
+3. Removes the worst leaf and stores its f-value in the parent's `forgotten_f` field
+4. If exploration later suggests a forgotten subtree might contain the solution, it can be regenerated
+
+**Node Pruning Strategy:**
+
+When choosing which node to prune, SMA* selects the leaf node with:
+- Highest f-value (least promising)
+- Among ties, prefers shallower nodes (lower g-value)
+
+**Performance:**
+
+For puzzles solvable within the memory limit, SMA* performs identically to A*:
+- SMA* with Manhattan distance: 11 iterations, max frontier 15
+- SMA* with Hamming distance: 19 iterations, max frontier 24
+
+For problems exceeding the memory limit, SMA* trades time for space by re-exploring pruned subtrees.
+
+### 3.4 Heuristic Functions
+
+Heuristic functions are the key to informed search performance. A good heuristic guides the search efficiently toward the goal, while a poor heuristic provides little advantage over uninformed search.
+
+#### 3.4.1 Manhattan Distance
+
+**Definition:**
+
+Manhattan distance (also called taxicab distance or L1 norm) is the sum of the horizontal and vertical distances each tile must travel to reach its goal position. For a tile at position (x₁, y₁) that belongs at position (x₂, y₂), its Manhattan distance is |x₁ - x₂| + |y₁ - y₂|.
+
+**Calculation:**
+
+For the entire puzzle, the Manhattan distance is the sum of individual Manhattan distances for all non-empty tiles:
+
+```
+h(n) = Σ (|current_x - goal_x| + |current_y - goal_y|)
+```
+
+**Admissibility:**
+
+Manhattan distance is admissible for the 15-puzzle. Each tile must move at least its Manhattan distance to reach the goal position, so the heuristic never overestimates the true cost. This makes it suitable for A* to guarantee optimal solutions.
+
+**Effectiveness:**
+
+Manhattan distance is highly effective for sliding puzzles because:
+- It accurately captures the minimum work needed (each tile's minimum moves)
+- It provides strong guidance without being too expensive to compute
+- It's significantly more informed than simpler heuristics like Hamming distance
+
+**Performance:**
+
+From our test results, Manhattan distance achieves exceptional efficiency:
+- A* Manhattan: 14 iterations (99.7% reduction vs uninformed)
+- Best-First Manhattan: 11 iterations
+- Maximum frontier size: only 15-18 states
+
+#### 3.4.2 Hamming Distance (Misplaced Tiles)
+
+**Definition:**
+
+Hamming distance counts the number of tiles that are not in their correct position (excluding the empty tile). It measures how many tiles need to move, but not how far they need to travel.
+
+**Calculation:**
+
+```
+h(n) = count of tiles in wrong positions
+```
+
+**Admissibility:**
+
+Hamming distance is admissible because each misplaced tile requires at least one move to reach its goal position. Since we count only the number of misplaced tiles (not the distance they must travel), the heuristic never overestimates.
+
+**Comparison with Manhattan Distance:**
+
+Hamming distance is less informed than Manhattan distance:
+- **Hamming**: Counts tiles that need to move (binary: wrong or right)
+- **Manhattan**: Measures how far each tile needs to move (quantitative distance)
+
+For example, if a tile is 5 positions away:
+- Hamming distance: contributes 1 (just "wrong position")
+- Manhattan distance: contributes 5 (actual distance)
+
+**Performance:**
+
+Test results show Hamming distance is less efficient than Manhattan:
+- A* Hamming: 24 iterations vs Manhattan's 14 (71% more)
+- Best-First Hamming: 20 iterations vs Manhattan's 11 (82% more)
+- Maximum frontier: 26-31 states vs Manhattan's 15-18
+
+While still dramatically better than uninformed search, Hamming distance provides weaker guidance than Manhattan distance for sliding puzzles.
