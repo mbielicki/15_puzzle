@@ -1,8 +1,10 @@
 from puzzle import Puzzle
 import logging
+import random
+from typing import Tuple, Optional
 
 
-def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Puzzle:
+def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int]:
     stack = [puzzle]
     i = 0
 
@@ -16,7 +18,7 @@ def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger:
         if current_puzzle.is_solved():
             if logger:
                 logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}")
-            return current_puzzle
+            return (current_puzzle, i)
 
         # Skip if depth limit exceeded
         if len(current_puzzle.history) >= depth_limit:
@@ -30,8 +32,14 @@ def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger:
             "R": (current_puzzle.can_move("R") and current_puzzle.previous_move() != "L", lambda p: p.right())
         }
 
-        moves_added = []
-        for move in order:
+        # Shuffle order at each node if RAND
+        if order == "RAND":
+            current_order = ['U', 'D', 'L', 'R']
+            random.shuffle(current_order)
+        else:
+            current_order = list(order)
+        
+        for move in current_order:
             if move in move_operations:
                 can_move, operation = move_operations[move]
                 if can_move:
@@ -41,10 +49,10 @@ def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger:
     
     if logger:
         logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}")
-    return None
+    return (None, i)
 
 
-def dfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Puzzle:
+def dfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int]:
     iteration_count = [0]  # Using list to allow modification in nested function
     
     def dfs_recursive(current_puzzle: Puzzle, depth: int) -> Puzzle:
@@ -71,7 +79,12 @@ def dfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
         }
         
         # Try moves in the specified order
-        moves = [move for move in order if move in move_operations and move_operations[move][0]]
+        if order == "RAND":
+            current_order = ['U', 'D', 'L', 'R']
+            random.shuffle(current_order)
+        else:
+            current_order = list(order)
+        moves = [move for move in current_order if move in move_operations and move_operations[move][0]]
         
         if logger and moves:
             logger.debug(f"Recursive - Trying moves: {moves}")
@@ -92,4 +105,5 @@ def dfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
             logger.debug(f"Recursive - No solution found from this state, returning None")
         return None
     
-    return dfs_recursive(puzzle, 0)
+    result = dfs_recursive(puzzle, 0)
+    return (result, iteration_count[0])

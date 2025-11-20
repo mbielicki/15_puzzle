@@ -14,19 +14,15 @@ def get_move_order(order_str, logger):
     """Process move order string.
     
     Args:
-        order_str: String defining move order (e.g., 'DULR' or 'RANDU')
+        order_str: String defining move order (e.g., 'DULR' or 'RAND')
         logger: Logger instance for logging
     
     Returns:
-        str: Processed move order. If starts with 'R', returns random permutation.
+        str: Processed move order. Returns 'RAND' for random ordering at each node.
     """
-    if order_str.upper().startswith('R'):
-        # Random order
-        moves = ['L', 'R', 'U', 'D']
-        random.shuffle(moves)
-        order = ''.join(moves)
-        logger.info(f"Using random move order: {order}")
-        return order
+    if order_str.upper() == 'RAND':
+        logger.info(f"Using random move order (shuffled at each node)")
+        return 'RAND'
     else:
         logger.info(f"Using move order: {order_str.upper()}")
         return order_str.upper()
@@ -43,7 +39,7 @@ def solve_puzzle(puzzle, algorithm, parameter, logger, depth_limit=15):
         depth_limit: Maximum search depth
     
     Returns:
-        Puzzle or None: Solved puzzle if solution found, None otherwise
+        Tuple[Puzzle or None, int]: (Solved puzzle if found, iteration count)
     """
     logger.info(f"Starting {algorithm.upper()} algorithm with depth limit {depth_limit}")
     
@@ -61,23 +57,20 @@ def solve_puzzle(puzzle, algorithm, parameter, logger, depth_limit=15):
             return iddfs(puzzle, depth_limit, order, logger)
     
     elif algorithm in ['bf', 'astar', 'sma']:
-        # For heuristic-based algorithms - use larger depth limit
+        # For heuristic-based algorithms
         heuristic_id = parameter
         heuristic = get_heuristic(heuristic_id)
         order = 'UDLR'  # Default order for heuristic searches
         logger.info(f"Using heuristic ID: {heuristic_id}")
         
-        # Use larger depth limit for informed search
-        informed_depth_limit = 50
-        
         if algorithm == 'bf':
             logger.info("Running Best-First Search")
-            return best_first_search(puzzle, informed_depth_limit, order, heuristic, logger)
+            return best_first_search(puzzle, depth_limit, order, heuristic, logger)
         elif algorithm == 'astar':
             logger.info("Running A* Search")
-            return a_star(puzzle, informed_depth_limit, order, heuristic, logger)
+            return a_star(puzzle, depth_limit, order, heuristic, logger)
         elif algorithm == 'sma':
             logger.info("Running SMA* Search")
-            return sma_star(puzzle, informed_depth_limit, max_nodes=10000, order=order, heuristic=heuristic, logger=logger)
+            return sma_star(puzzle, depth_limit, max_nodes=10000, order=order, heuristic=heuristic, logger=logger)
     
-    return None
+    return (None, 0)

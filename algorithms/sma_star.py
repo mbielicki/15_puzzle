@@ -2,6 +2,7 @@ from puzzle import Puzzle
 import logging
 import heapq
 from algorithms.heuristics import manhattan_distance
+from typing import Tuple, Optional
 
 
 class SMAStarNode:
@@ -22,7 +23,7 @@ class SMAStarNode:
         return self.g > other.g
 
 
-def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Puzzle:
+def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int]:
     """SMA* (Simplified Memory-bounded A*) algorithm.
     
     Memory-efficient variant of A* that limits the number of nodes in memory.
@@ -70,7 +71,7 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
         if current_puzzle.is_solved():
             if logger:
                 logger.info(f"Solution found! Iterations: {iteration}, Moves: {len(current_puzzle.history)}")
-            return current_puzzle
+            return (current_puzzle, iteration)
         
         # Mark as visited
         state = current_puzzle.__repr__()
@@ -136,4 +137,4 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
     
     if logger:
         logger.info(f"No solution found. Iterations: {iteration}, Depth limit: {depth_limit}")
-    return None
+    return (None, iteration)

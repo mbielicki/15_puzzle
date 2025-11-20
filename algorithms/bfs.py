@@ -1,7 +1,9 @@
 from puzzle import Puzzle
 import logging
+import random
+from typing import Tuple, Optional
 
-def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Puzzle:
+def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int]:
     queue = [puzzle]
     visited = set()
     i = 0
@@ -16,7 +18,7 @@ def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
         if current_puzzle.is_solved():
             if logger:
                 logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}")
-            return current_puzzle
+            return (current_puzzle, i)
         if current_puzzle.__repr__() in visited:
             continue
         visited.add(current_puzzle.__repr__())
@@ -33,7 +35,14 @@ def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
             "R": (current_puzzle.can_move("R") and current_puzzle.previous_move() != "L", lambda p: p.right())
         }
 
-        for move in order:
+        # Shuffle order at each node if RAND
+        if order == "RAND":
+            current_order = ['U', 'D', 'L', 'R']
+            random.shuffle(current_order)
+        else:
+            current_order = list(order)
+        
+        for move in current_order:
             if move in move_operations:
                 can_move, operation = move_operations[move]
                 if can_move:
@@ -43,4 +52,4 @@ def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
     
     if logger:
         logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}")
-    return None
+    return (None, i)

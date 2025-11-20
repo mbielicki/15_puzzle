@@ -1,10 +1,11 @@
+from typing import Optional, Tuple
 from puzzle import Puzzle
 import logging
 import heapq
 from algorithms.heuristics import manhattan_distance
 
 
-def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Puzzle:
+def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int]:
     """A* algorithm using a heuristic function.
     
     Uses a priority queue where states are prioritized by f(n) = g(n) + h(n):
@@ -37,7 +38,7 @@ def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None
         if current_puzzle.is_solved():
             if logger:
                 logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}")
-            return current_puzzle
+            return (current_puzzle, i)
         
         state = current_puzzle.__repr__()
         if state in visited:
@@ -71,4 +72,4 @@ def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None
     
     if logger:
         logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}")
-    return None
+    return (None, i)

@@ -49,7 +49,7 @@ def main():
     try:
         logger.info("=" * 60)
         logger.info(f"Solving puzzle using {algorithm.upper()}")
-        solved = solve_puzzle(puzzle, algorithm, parameter, logger)
+        solved, iterations = solve_puzzle(puzzle, algorithm, parameter, logger)
     except KeyboardInterrupt:
         logger.warning("Search interrupted by user")
         print("\nSearch interrupted", file=sys.stderr)
