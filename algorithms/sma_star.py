@@ -23,7 +23,7 @@ class SMAStarNode:
         return self.g > other.g
 
 
-def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int]:
+def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int, int]:
     """SMA* (Simplified Memory-bounded A*) algorithm.
     
     Memory-efficient variant of A* that limits the number of nodes in memory.
@@ -56,9 +56,11 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
     visited = set()
     
     iteration = 0
+    max_frontier_size = 1
 
     while open_heap:
         iteration += 1
+        max_frontier_size = max(max_frontier_size, len(open_heap))
         
         # Get the most promising node
         current_node = heapq.heappop(open_heap)
@@ -70,8 +72,8 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
         # Goal test
         if current_puzzle.is_solved():
             if logger:
-                logger.info(f"Solution found! Iterations: {iteration}, Moves: {len(current_puzzle.history)}")
-            return (current_puzzle, iteration)
+                logger.info(f"Solution found! Iterations: {iteration}, Moves: {len(current_puzzle.history)}, Max frontier: {max_frontier_size}")
+            return (current_puzzle, iteration, max_frontier_size)
         
         # Mark as visited
         state = current_puzzle.__repr__()
@@ -136,5 +138,6 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
             nodes_in_memory[state] = node
     
     if logger:
-        logger.info(f"No solution found. Iterations: {iteration}, Depth limit: {depth_limit}")
+        logger.info(f"No solution found. Iterations: {iteration}, Depth limit: {depth_limit}, Max frontier: {max_frontier_size}")
+    return (None, iteration, max_frontier_size)
     return (None, iteration)

@@ -4,12 +4,14 @@ import random
 from typing import Tuple, Optional
 
 
-def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int]:
+def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int, int]:
     stack = [puzzle]
     i = 0
+    max_frontier_size = 1
 
     while stack:
         i += 1
+        max_frontier_size = max(max_frontier_size, len(stack))
         current_puzzle = stack.pop()
         
         if logger:
@@ -17,8 +19,8 @@ def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger:
         
         if current_puzzle.is_solved():
             if logger:
-                logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}")
-            return (current_puzzle, i)
+                logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}, Max frontier: {max_frontier_size}")
+            return (current_puzzle, i, max_frontier_size)
 
         # Skip if depth limit exceeded
         if len(current_puzzle.history) >= depth_limit:
@@ -48,22 +50,24 @@ def dfs_iterative(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger:
                     stack.append(new_puzzle)
     
     if logger:
-        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}")
-    return (None, i)
+        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}, Max frontier: {max_frontier_size}")
+    return (None, i, max_frontier_size)
 
 
-def dfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int]:
+def dfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int, int]:
     iteration_count = [0]  # Using list to allow modification in nested function
+    max_depth = [0]  # Track maximum recursion depth (proxy for frontier size)
     
     def dfs_recursive(current_puzzle: Puzzle, depth: int) -> Puzzle:
         iteration_count[0] += 1
+        max_depth[0] = max(max_depth[0], depth)
         
         if logger:
             logger.info(f"Iter {iteration_count[0]}: depth={len(current_puzzle.history)}")
         
         if current_puzzle.is_solved():
             if logger:
-                logger.info(f"Solution found! Iterations: {iteration_count[0]}, Moves: {len(current_puzzle.history)}")
+                logger.info(f"Solution found! Iterations: {iteration_count[0]}, Moves: {len(current_puzzle.history)}, Max depth: {max_depth[0]}")
             return current_puzzle
         
         # Skip if depth limit exceeded
@@ -106,4 +110,4 @@ def dfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
         return None
     
     result = dfs_recursive(puzzle, 0)
-    return (result, iteration_count[0])
+    return (result, iteration_count[0], max_depth[0])

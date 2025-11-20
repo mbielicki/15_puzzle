@@ -49,7 +49,7 @@ def main():
     try:
         logger.info("=" * 60)
         logger.info(f"Solving puzzle using {algorithm.upper()}")
-        solved, iterations = solve_puzzle(puzzle, algorithm, parameter, logger)
+        solved, iterations, max_frontier = solve_puzzle(puzzle, algorithm, parameter, logger)
     except KeyboardInterrupt:
         logger.warning("Search interrupted by user")
         print("\nSearch interrupted", file=sys.stderr)
@@ -68,6 +68,7 @@ def main():
         solution = ''.join(solved.history)
         logger.info(f"Solution found! Length: {len(solution)} moves")
         logger.info(f"Solution: {solution}")
+        logger.info(f"Iterations: {iterations}, Max frontier size: {max_frontier}")
         logger.info("=" * 60)
         print(len(solution))
         print(solution)

@@ -5,7 +5,7 @@ import heapq
 from algorithms.heuristics import manhattan_distance
 
 
-def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int]:
+def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int, int]:
     """A* algorithm using a heuristic function.
     
     Uses a priority queue where states are prioritized by f(n) = g(n) + h(n):
@@ -25,9 +25,11 @@ def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None
     pq = [(f, counter, puzzle)]
     visited = set()
     i = 0
+    max_frontier_size = 1
 
     while pq:
         i += 1
+        max_frontier_size = max(max_frontier_size, len(pq))
         current_f, _, current_puzzle = heapq.heappop(pq)
         current_g = len(current_puzzle.history)
         current_h = current_f - current_g
@@ -37,8 +39,8 @@ def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None
         
         if current_puzzle.is_solved():
             if logger:
-                logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}")
-            return (current_puzzle, i)
+                logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}, Max frontier: {max_frontier_size}")
+            return (current_puzzle, i, max_frontier_size)
         
         state = current_puzzle.__repr__()
         if state in visited:
@@ -71,5 +73,5 @@ def a_star(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None
                     heapq.heappush(pq, (new_f, counter, new_puzzle))
     
     if logger:
-        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}")
-    return (None, i)
+        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}, Max frontier: {max_frontier_size}")
+    return (None, i, max_frontier_size)

@@ -63,39 +63,40 @@ for name, algorithm, parameter in algorithms:
     
     try:
         puzzle = initial_puzzle.copy()
-        solved, iterations = solve_puzzle(puzzle, algorithm, parameter, logger)
+        solved, iterations, max_frontier = solve_puzzle(puzzle, algorithm, parameter, logger)
         elapsed = time.time() - start_time
         
         if solved is not None:
             moves = len(solved.history)
             solution = ''.join(solved.history)
-            print(f"[OK] Solution: {moves} moves, {iterations:,} iterations in {elapsed:.2f}s")
+            print(f"[OK] Solution: {moves} moves, {iterations:,} iterations, max frontier: {max_frontier:,} in {elapsed:.2f}s")
             print(f"  Moves: {solution}")
-            results.append((name, moves, solution, elapsed, iterations, "SUCCESS"))
+            results.append((name, moves, solution, elapsed, iterations, max_frontier, "SUCCESS"))
         else:
-            print(f"[FAIL] No solution found, {iterations:,} iterations in {elapsed:.2f}s")
-            results.append((name, -1, "", elapsed, iterations, "NO SOLUTION"))
+            print(f"[FAIL] No solution found, {iterations:,} iterations, max frontier: {max_frontier:,} in {elapsed:.2f}s")
+            results.append((name, -1, "", elapsed, iterations, max_frontier, "NO SOLUTION"))
     
     except KeyboardInterrupt:
         elapsed = time.time() - start_time
         print(f"[INTERRUPTED] Interrupted after {elapsed:.2f}s")
-        results.append((name, -1, "", elapsed, None, "INTERRUPTED"))
+        results.append((name, -1, "", elapsed, None, None, "INTERRUPTED"))
         break
     
     except Exception as e:
         elapsed = time.time() - start_time
         print(f"[EXCEPTION] Exception: {e}")
-        results.append((name, -1, "", elapsed, None, "EXCEPTION"))
+        results.append((name, -1, "", elapsed, None, None, "EXCEPTION"))
 
 print("\n" + "=" * 100)
 print("SUMMARY")
 print("=" * 100)
-print(f"{'Algorithm':<30} {'Moves':<8} {'Iterations':<15} {'Time (s)':<12} {'Status':<15}")
+print(f"{'Algorithm':<30} {'Moves':<8} {'Iterations':<15} {'Max Frontier':<15} {'Time (s)':<12} {'Status':<15}")
 print("-" * 100)
 
-for name, moves, solution, elapsed, iterations, status in results:
+for name, moves, solution, elapsed, iterations, max_frontier, status in results:
     moves_str = str(moves) if moves >= 0 else "N/A"
     iter_str = f"{iterations:,}" if iterations is not None else "N/A"
-    print(f"{name:<30} {moves_str:<8} {iter_str:<15} {elapsed:<12.2f} {status:<15}")
+    frontier_str = f"{max_frontier:,}" if max_frontier is not None else "N/A"
+    print(f"{name:<30} {moves_str:<8} {iter_str:<15} {frontier_str:<15} {elapsed:<12.2f} {status:<15}")
 
 print("=" * 100)

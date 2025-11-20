@@ -39,7 +39,7 @@ def solve_puzzle(puzzle, algorithm, parameter, logger, depth_limit=15):
         depth_limit: Maximum search depth
     
     Returns:
-        Tuple[Puzzle or None, int]: (Solved puzzle if found, iteration count)
+        Tuple[Puzzle or None, int, int]: (Solved puzzle if found, iteration count, max frontier size)
     """
     logger.info(f"Starting {algorithm.upper()} algorithm with depth limit {depth_limit}")
     
@@ -73,4 +73,4 @@ def solve_puzzle(puzzle, algorithm, parameter, logger, depth_limit=15):
             logger.info("Running SMA* Search")
             return sma_star(puzzle, depth_limit, max_nodes=10000, order=order, heuristic=heuristic, logger=logger)
     
-    return (None, 0)
+    return (None, 0, 0)

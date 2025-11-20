@@ -1,26 +1,37 @@
-Algorithm                      Moves    Iterations      Time (s)     Status
+Algorithm                      Moves    Iterations      Max Frontier    Time (s)     Status
 ----------------------------------------------------------------------------------------------------
-BFS UDLR                       10       4,848           1.42         SUCCESS
-BFS DULR                       10       4,817           1.45         SUCCESS
-BFS LRUD                       10       3,470           1.03         SUCCESS
-BFS RDUL                       10       2,618           0.78         SUCCESS
-BFS RAND                       10       2,662           0.79         SUCCESS
-DFS UDLR                       12       201,089         24.65        SUCCESS
-DFS DULR                       12       203,465         24.08        SUCCESS
-DFS LRUD                       10       95,493          11.35        SUCCESS
-DFS RDUL                       12       7,642           0.93         SUCCESS
-DFS RAND                       10       210,159         25.52        SUCCESS
-IDDFS UDLR                     10       9,814           1.17         SUCCESS
-IDDFS DULR                     10       9,704           1.19         SUCCESS
-IDDFS LRUD                     10       6,890           0.83         SUCCESS
-IDDFS RAND                     10       7,968           1.01         SUCCESS
-A* h=0                         10       4,848           1.00         SUCCESS
-A* h=1 (Manhattan)             10       14              0.01         SUCCESS
-A* h=2 (Hamming)               10       24              0.01         SUCCESS
-Best-First h=0                 10       4,848           0.96         SUCCESS
-Best-First h=1 (Manhattan)     10       11              0.01         SUCCESS
-Best-First h=2 (Hamming)       10       20              0.01         SUCCESS
-SMA* h=0                       10       4,821           1.15         SUCCESS
-SMA* h=1 (Manhattan)           10       11              0.01         SUCCESS
-SMA* h=2 (Hamming)             10       19              0.01         SUCCESS
+BFS UDLR                       10       4,848           5,061           0.96         SUCCESS
+BFS DULR                       10       4,817           5,036           1.01         SUCCESS
+BFS LRUD                       10       3,470           3,710           0.74         SUCCESS
+BFS RDUL                       10       2,618           2,824           0.59         SUCCESS
+BFS RAND                       10       4,512           4,716           0.97         SUCCESS
+DFS UDLR                       12       201,089         15              23.44        SUCCESS
+DFS DULR                       12       203,465         15              23.14        SUCCESS
+DFS LRUD                       10       95,493          15              10.89        SUCCESS
+DFS RDUL                       12       7,642           15              0.85         SUCCESS
+DFS RAND                       12       130,727         15              14.86        SUCCESS
+IDDFS UDLR                     10       9,814           10              1.10         SUCCESS
+IDDFS DULR                     10       9,704           10              1.09         SUCCESS
+IDDFS LRUD                     10       6,890           10              0.75         SUCCESS
+IDDFS RAND                     10       7,142           10              0.83         SUCCESS
+A* h=0                         10       4,848           5,061           0.90         SUCCESS
+A* h=1 (Manhattan)             10       14              18              0.01         SUCCESS
+A* h=2 (Hamming)               10       24              31              0.01         SUCCESS
+Best-First h=0                 10       4,848           5,061           0.87         SUCCESS
+Best-First h=1 (Manhattan)     10       11              15              0.01         SUCCESS
+Best-First h=2 (Hamming)       10       20              26              0.01         SUCCESS
+SMA* h=0                       10       4,821           5,143           1.07         SUCCESS
+SMA* h=1 (Manhattan)           10       11              15              0.01         SUCCESS
+SMA* h=2 (Hamming)             10       19              24              0.01         SUCCESS
 ====================================================================================================
+Algorithm: Search algorithm with configuration parameter (move order for uninformed search; heuristic function for informed search)
+
+Moves: Solution path length (number of tile moves). Lower is better; optimal for this puzzle is 10.
+
+Iterations: Total number of states examined during search. Indicates computational work.
+
+Max Frontier: Maximum number of states held in memory simultaneously.
+
+Time (s): Execution time in seconds.
+
+Status: Outcome of the search (SUCCESS, NO SOLUTION, INTERRUPTED, or EXCEPTION)

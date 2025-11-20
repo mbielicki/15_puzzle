@@ -5,7 +5,7 @@ from algorithms.heuristics import manhattan_distance
 from typing import Tuple, Optional
 
 
-def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int]:
+def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int, int]:
     """Best First Search using a heuristic function.
     
     Uses a priority queue where states are prioritized by their heuristic value
@@ -21,9 +21,11 @@ def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heu
     pq = [(initial_h, counter, puzzle)]
     visited = set()
     i = 0
+    max_frontier_size = 1
 
     while pq:
         i += 1
+        max_frontier_size = max(max_frontier_size, len(pq))
         h, _, current_puzzle = heapq.heappop(pq)
         
         if logger:
@@ -31,8 +33,8 @@ def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heu
         
         if current_puzzle.is_solved():
             if logger:
-                logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}")
-            return (current_puzzle, i)
+                logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}, Max frontier: {max_frontier_size}")
+            return (current_puzzle, i, max_frontier_size)
         
         state = current_puzzle.__repr__()
         if state in visited:
@@ -63,6 +65,5 @@ def best_first_search(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", heu
                     heapq.heappush(pq, (h, counter, new_puzzle))
     
     if logger:
-        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}")
-    return (None, i)
-    return None
+        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}, Max frontier: {max_frontier_size}")
+    return (None, i, max_frontier_size)

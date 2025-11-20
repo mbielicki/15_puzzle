@@ -3,13 +3,15 @@ import logging
 import random
 from typing import Tuple, Optional
 
-def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int]:
+def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int, int]:
     queue = [puzzle]
     visited = set()
     i = 0
+    max_frontier_size = 1
 
     while queue:
         i+= 1
+        max_frontier_size = max(max_frontier_size, len(queue))
         current_puzzle = queue.pop(0)
         
         if logger:
@@ -17,8 +19,8 @@ def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
         
         if current_puzzle.is_solved():
             if logger:
-                logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}")
-            return (current_puzzle, i)
+                logger.info(f"Solution found! Iterations: {i}, Moves: {len(current_puzzle.history)}, Max frontier: {max_frontier_size}")
+            return (current_puzzle, i, max_frontier_size)
         if current_puzzle.__repr__() in visited:
             continue
         visited.add(current_puzzle.__repr__())
@@ -51,5 +53,5 @@ def bfs(puzzle: Puzzle, depth_limit: int, order: str = "UDLR", logger: logging.L
                     queue.append(new_puzzle)
     
     if logger:
-        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}")
-    return (None, i)
+        logger.info(f"No solution found. Iterations: {i}, Depth limit: {depth_limit}, Max frontier: {max_frontier_size}")
+    return (None, i, max_frontier_size)
