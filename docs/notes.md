@@ -1,5 +1,34 @@
 # Observations
 
+## Why IDDFS Does More Iterations Than BFS
+
+IDDFS (Iterative Deepening Depth-First Search) performs significantly more iterations than BFS to find the same solution, even though both algorithms are optimal and find the shortest path.
+
+**Example from test results:**
+- BFS LRUD: 2,618 iterations → 10-move solution
+- IDDFS LRUD: 6,890 iterations → 10-move solution
+
+**Reason: Redundant Work**
+
+IDDFS repeatedly visits the same states across multiple depth iterations:
+
+1. **Depth 0**: Explores root node (1 iteration)
+2. **Depth 1**: Explores root + depth-1 nodes (multiple iterations)
+3. **Depth 2**: Explores root + depth-1 + depth-2 nodes (even more iterations)
+4. ...continues until solution depth...
+
+Each iteration restarts from the root and re-explores all shallower levels. States near the root are visited many times (once per depth level).
+
+**BFS visits each state exactly once** using a queue and visited set, so it never re-explores states.
+
+**Why use IDDFS then?**
+- Memory efficiency: BFS stores all frontier nodes in memory (can be huge), while IDDFS only stores the current path (O(d) vs O(b^d) space)
+- For deep solutions or large branching factors, the memory savings outweigh the redundant iterations
+
+**Trade-off:**
+- IDDFS: More iterations, less memory
+- BFS: Fewer iterations, more memory
+
 ## Visited set and depth limit
 
 The Problem:
