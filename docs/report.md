@@ -12,17 +12,9 @@ The puzzle serves as an excellent benchmark for comparing different search algor
 
 ### 1.2 Algorithms Implemented
 
-This project implements and compares six different search algorithms:
+This project implements and compares six different search algorithms, divided into two categories based on their use of domain knowledge. The uninformed search algorithms—Breadth-First Search (BFS), Depth-First Search (DFS), and Iterative Deepening DFS (IDDFS)—explore the state space systematically without any problem-specific guidance. BFS explores states level by level guaranteeing optimal solutions, DFS explores deeply before backtracking and requires depth limiting, while IDDFS combines the optimality of BFS with the memory efficiency of DFS.
 
-**Uninformed Search Algorithms:**
-- **Breadth-First Search (BFS)**: Explores states level by level, guaranteeing optimal solutions
-- **Depth-First Search (DFS)**: Explores deeply before backtracking, requires depth limiting
-- **Iterative Deepening DFS (IDDFS)**: Combines BFS optimality with DFS memory efficiency
-
-**Informed Search Algorithms:**
-- **Best-First Search**: Greedy search using heuristic function only
-- **A\* Search**: Optimal search using f(n) = g(n) + h(n) with admissible heuristics
-- **Simplified Memory-Bounded A\* (SMA\*)**: Memory-limited variant of A\*
+The informed search algorithms leverage heuristic functions to guide their exploration more intelligently. Best-First Search uses a greedy approach prioritizing states that appear closest to the goal, A\* Search combines actual cost with heuristic estimates using the evaluation function f(n) = g(n) + h(n) to guarantee optimal solutions, and Simplified Memory-Bounded A\* (SMA\*) provides a memory-limited variant of A\* for resource-constrained environments.
 
 All algorithms were tested with various configurations including different move orderings and heuristic functions to provide comprehensive performance comparisons.
 
@@ -37,27 +29,9 @@ python main.py -<algorithm> <parameter>
 
 **Algorithm Selection and Parameters:**
 
-The parameter depends on the algorithm selected:
+The parameter depends on the algorithm selected. For uninformed search algorithms, users specify a move ordering strategy. BFS can be invoked with `-b` or `--bfs`, DFS with `-d` or `--dfs`, and IDDFS with `-i` or `--idfs`, each followed by an ORDER parameter. The move ordering determines the exploration sequence: LRUD prioritizes Left-Right-Up-Down, RDUL uses Right-Down-Up-Left, UDLR prefers Up-Down-Left-Right, DURL chooses Down-Up-Right-Left, while RAND introduces non-deterministic behavior through random ordering at each node.
 
-*Uninformed Search Algorithms (BFS, DFS, IDDFS):*
-- `-b` or `--bfs ORDER`: Breadth-First Search
-- `-d` or `--dfs ORDER`: Depth-First Search
-- `-i` or `--idfs`: Iterative Deepening DFS
-- **Parameter (ORDER)**: Move ordering strategy
-  - `LRUD`: Left, Right, Up, Down
-  - `RDUL`: Right, Down, Up, Left
-  - `UDLR`: Up, Down, Left, Right
-  - `DURL`: Down, Up, Right, Left
-  - `RAND`: Random ordering at each node (non-deterministic)
-
-*Informed Search Algorithms (Best-First, A\*, SMA\*):*
-- `-f` or `--bf HEURISTIC`: Best-First Search
-- `-a` or `--astar HEURISTIC`: A\* Search
-- `-s` or `--sma HEURISTIC`: SMA\* Search
-- **Parameter (HEURISTIC)**: Heuristic function identifier
-  - `0`: No heuristic (equivalent to uninformed search)
-  - `1`: Manhattan distance
-  - `2`: Hamming distance (misplaced tiles)
+Informed search algorithms require a heuristic function identifier instead. Best-First Search uses `-f` or `--bf`, A\* Search uses `-a` or `--astar`, and SMA\* uses `-s` or `--sma`, each followed by a HEURISTIC parameter. The heuristic can be 0 for no heuristic (equivalent to uninformed search), 1 for Manhattan distance, or 2 for Hamming distance (misplaced tiles).
 
 **Input Format:**
 
@@ -107,11 +81,7 @@ Breadth-First Search explores the state space level by level, examining all stat
 
 **Key Characteristics:**
 
-- **Completeness**: BFS is complete - it will find a solution if one exists
-- **Optimality**: BFS guarantees finding the shortest solution path (optimal for unit-cost paths)
-- **Visited Set**: Uses a visited set to avoid re-exploring states, ensuring each state is processed only once
-- **Time Complexity**: O(b^d) where *b* is the branching factor and *d* is the solution depth
-- **Space Complexity**: O(b^d) - can be memory-intensive for deep solutions as it stores all frontier nodes
+BFS is complete, meaning it will always find a solution if one exists. More importantly, it guarantees optimality by finding the shortest solution path for problems with unit-cost actions. The algorithm maintains a visited set to avoid re-exploring states, ensuring each state is processed exactly once. This systematic approach comes at a computational cost: both time and space complexity are O(b^d), where *b* represents the branching factor and *d* the solution depth. The space complexity is particularly significant, as BFS must store all frontier nodes in memory, making it memory-intensive for deep solutions.
 
 **Implementation Details:**
 
@@ -132,11 +102,7 @@ Depth-First Search explores the state space by following a single path as deeply
 
 **Key Characteristics:**
 
-- **Completeness**: DFS is complete only with a depth limit - without one, it may explore infinitely deep paths
-- **Optimality**: DFS does not guarantee optimal solutions - it finds the first solution encountered, which may not be shortest
-- **Time Complexity**: O(b^d) in the worst case, where all paths up to depth *d* are explored
-- **Space Complexity**: O(d) where *d* is the search depth - much more memory-efficient than BFS
-- **Depth Limit Necessity**: A depth limit is essential to prevent infinite exploration and ensure termination
+Unlike BFS, DFS is complete only when constrained by a depth limit; without this boundary, it may explore infinitely deep paths and never terminate. The algorithm makes no guarantees about optimality—it simply returns the first solution encountered, which may be far from the shortest path. The worst-case time complexity remains O(b^d) when all paths up to depth *d* must be explored, but the space complexity is dramatically better at O(d), storing only the current search path rather than all frontier nodes. This makes DFS much more memory-efficient than BFS. However, the depth limit is not optional—it's essential to prevent infinite exploration and ensure the algorithm terminates in finite time.
 
 **The Visited Set Problem:**
 
@@ -159,16 +125,11 @@ Iterative Deepening Depth-First Search combines the space efficiency of DFS with
 
 **Key Characteristics:**
 
-- **Completeness**: IDDFS is complete like BFS
-- **Optimality**: IDDFS guarantees optimal solutions like BFS
-- **Time Complexity**: O(b^d) - performs more iterations than BFS due to repeated exploration of shallow states
-- **Space Complexity**: O(d) like DFS - only stores the current search path
+IDDFS inherits the best properties of both its predecessors. Like BFS, it is complete and guarantees optimal solutions, never missing the shortest path to the goal. The time complexity is O(b^d), though it performs more iterations than BFS due to repeated exploration of shallow states across multiple depth iterations. However, the space complexity matches DFS at O(d), storing only the current search path rather than the exponentially growing frontier that BFS requires.
 
 **Why IDDFS Does More Iterations Than BFS:**
 
-IDDFS performs significantly more iterations than BFS to find the same solution, even though both algorithms are optimal. From our test results:
-- BFS LRUD: 3,470 iterations → 10-move solution
-- IDDFS LRUD: 6,890 iterations → 10-move solution
+IDDFS performs significantly more iterations than BFS to find the same solution, even though both algorithms are optimal (typically 2× more iterations as shown in experimental results).
 
 **Reason: Redundant Work**
 
@@ -184,15 +145,9 @@ In contrast, **BFS visits each state exactly once** using a queue and visited se
 
 **Why Use IDDFS?**
 
-Despite the redundant work, IDDFS offers crucial advantages:
-- **Memory Efficiency**: BFS stores all frontier nodes in memory (can be enormous), while IDDFS only stores the current path (O(d) vs O(b^d) space)
-- **Scalability**: For deep solutions or large branching factors, the memory savings outweigh the redundant iterations
-- **Optimal + Space-Efficient**: The only algorithm combining BFS's optimality with DFS's memory efficiency
+Despite performing redundant work, IDDFS offers crucial advantages that make it valuable for many practical applications. The memory efficiency is striking: while BFS stores all frontier nodes in memory (which can become enormous), IDDFS only stores the current path, achieving O(d) space complexity instead of BFS's O(b^d). For problems with deep solutions or large branching factors, these memory savings far outweigh the cost of redundant iterations. Most importantly, IDDFS is the only algorithm that combines BFS's optimality guarantee with DFS's memory efficiency—a unique position in the algorithm landscape.
 
-**Trade-off Summary:**
-- IDDFS: More iterations, less memory, optimal
-- BFS: Fewer iterations, more memory, optimal
-- DFS: Fewer iterations, less memory, not optimal
+The trade-offs become clear when comparing all three uninformed algorithms: IDDFS accepts more iterations to maintain optimality while using minimal memory, BFS achieves fewer iterations at the cost of exponential memory growth, and DFS minimizes both iterations and memory but sacrifices the optimality guarantee.
 
 ### 2.4 Move Ordering Strategies
 
@@ -209,18 +164,9 @@ Move ordering determines the sequence in which the algorithm considers valid mov
 
 **Impact on Search:**
 
-Different move orders can dramatically affect the number of iterations required to find a solution:
-- The order determines which branches of the search tree are explored first
-- A fortunate ordering may find the solution quickly; an unfortunate one explores many wrong paths
-- For BFS, different orderings produce the same solution length (optimal) but different iteration counts
-- For DFS, different orderings can produce both different solution lengths and different iteration counts
+Different move orders can dramatically affect the number of iterations required to find a solution. The ordering determines which branches of the search tree are explored first, and this choice has profound consequences. A fortunate ordering may stumble upon the solution quickly by exploring the right branches early, while an unfortunate one wastes computational effort exploring many wrong paths before finding the goal.
 
-From our test results, BFS performance varied significantly by move order:
-- BFS LRUD: 3,470 iterations
-- BFS RDUL: 2,618 iterations (best)
-- BFS UDLR: 4,848 iterations (worst)
-
-This variance demonstrates how critical move ordering is for uninformed search efficiency.
+The impact varies by algorithm. For BFS, different orderings always produce the same solution length (maintaining optimality) but can require vastly different iteration counts to reach that solution. DFS is even more sensitive—different orderings can produce both different solution lengths and different iteration counts. Experimental results reveal BFS iteration counts varying by up to 85% based solely on move ordering, demonstrating how critical this factor is for uninformed search efficiency.
 
 #### 2.4.2 Random Order (RAND)
 
@@ -228,16 +174,11 @@ The RAND ordering introduces non-deterministic behavior by randomly shuffling th
 
 **Implementation:**
 
-Unlike standard orderings that use a fixed sequence throughout the search, RAND creates a fresh random permutation of [U, D, L, R] at every node. This means:
-- Each state expansion uses a different random ordering
-- The same puzzle may take different paths across multiple runs
-- Iteration counts and execution times vary between runs
+The RAND ordering takes a fundamentally different approach from standard orderings. Rather than using a fixed sequence throughout the search, RAND creates a fresh random permutation of [U, D, L, R] at every node expansion. This means each state expansion uses a different random ordering, causing the same puzzle to potentially take different paths across multiple runs, with iteration counts and execution times varying between attempts.
 
 **Characteristics:**
 
-- **Non-Deterministic**: Different results on each execution
-- **Exploration Diversity**: Avoids systematic bias of fixed orderings
-- **Variable Performance**: May find solutions quickly or slowly depending on random choices
+This randomization introduces non-determinism—running the same puzzle twice can produce different results. The benefit is exploration diversity, avoiding the systematic biases that fixed orderings might have for particular puzzle configurations. The drawback is variable performance: random choices might lead to quick solutions or prolonged searches, making the algorithm's behavior unpredictable.
 
 ## 3. Informed Search Algorithms
 
@@ -251,11 +192,7 @@ Best-First Search is a greedy search algorithm that uses a priority queue to exp
 
 **Key Characteristics:**
 
-- **Completeness**: Complete if the state space is finite and a visited set is used
-- **Optimality**: Not guaranteed - being greedy, it may find suboptimal solutions
-- **Time Complexity**: O(b^d) in the worst case, but typically much better with good heuristics
-- **Space Complexity**: O(b^d) - stores frontier and visited states
-- **Greedy Nature**: Focuses exclusively on minimizing estimated distance to goal
+Best-First Search is complete when the state space is finite and a visited set prevents cycles, but it makes no guarantees about optimality. Its greedy nature—focusing exclusively on minimizing the estimated distance to the goal—can lead to suboptimal solutions when the heuristic misleads it down promising-looking but ultimately inferior paths. The worst-case time complexity remains O(b^d), though in practice good heuristics often perform much better. Space complexity is O(b^d) since the algorithm must store both the frontier and visited states. The key characteristic that defines Best-First Search is this greedy behavior: always pursuing what looks best right now, without considering the actual cost already incurred to reach the current state.
 
 **Implementation Details:**
 
@@ -263,12 +200,7 @@ The algorithm uses a priority queue (min-heap) where states are ordered by their
 
 **Performance:**
 
-Best-First Search can be very efficient with good heuristics but may get stuck in local minima. From our test results:
-- Best-First with Manhattan distance: 11 iterations
-- Best-First with Hamming distance: 20 iterations
-- Best-First with no heuristic (h=0): 4,848 iterations (equivalent to BFS)
-
-The dramatic reduction in iterations (from 4,848 to 11) demonstrates the power of effective heuristics.
+Best-First Search can be very efficient with good heuristics but may get stuck in local minima. Detailed performance comparisons are provided in Section 4 (Experimental Results).
 
 ### 3.2 A* Search
 
@@ -281,11 +213,7 @@ A* (pronounced "A-star") is an optimal search algorithm that combines the actual
 
 **Key Characteristics:**
 
-- **Completeness**: Complete if a solution exists
-- **Optimality**: Guaranteed optimal if the heuristic is admissible (never overestimates)
-- **Time Complexity**: O(b^d) in the worst case, but typically much better with good heuristics
-- **Space Complexity**: O(b^d) - must maintain frontier and visited states
-- **Admissible Heuristics**: Requires h(n) ≤ true cost to goal for optimality guarantee
+A\* is complete whenever a solution exists and provides a crucial guarantee that Best-First Search lacks: optimality. This guarantee holds as long as the heuristic is admissible, meaning it never overestimates the true cost to the goal (h(n) ≤ true cost). While the worst-case time complexity remains O(b^d), good heuristics typically achieve much better performance by focusing the search on promising paths. The space complexity is O(b^d) since A\* must maintain both the frontier of unexplored states and the set of visited states to ensure optimality. The admissibility requirement is not merely a technical detail—it's the foundation of A\*'s optimality guarantee, ensuring that the algorithm never prematurely dismisses the optimal solution path.
 
 **Why A* is Optimal:**
 
@@ -297,12 +225,7 @@ States are prioritized by f(n) = g(n) + h(n). The algorithm tracks the actual pa
 
 **Performance:**
 
-A* with good heuristics dramatically outperforms uninformed search:
-- A* with Manhattan distance: 14 iterations, max frontier 18
-- A* with Hamming distance: 24 iterations, max frontier 31
-- A* with no heuristic (h=0): 4,848 iterations, max frontier 5,061 (equivalent to BFS)
-
-The Manhattan distance heuristic reduces iterations by 99.7% compared to uninformed search (14 vs 4,848).
+A* with good heuristics dramatically outperforms uninformed search. Detailed performance metrics are presented in Section 4 (Experimental Results).
 
 ### 3.3 Simplified Memory-Bounded A* (SMA*)
 
@@ -312,32 +235,17 @@ SMA* is a memory-limited variant of A* designed for scenarios where memory const
 
 **Key Characteristics:**
 
-- **Completeness**: Complete if enough memory exists to store the solution path
-- **Optimality**: Optimal like A* if the heuristic is admissible and memory is sufficient
-- **Time Complexity**: O(b^d) but may re-explore pruned subtrees
-- **Space Complexity**: O(memory limit) - bounded by user-specified constraint
-- **Memory Management**: Prunes worst leaf nodes when memory is full
+SMA\* is complete under the condition that enough memory exists to store the solution path itself—a much weaker requirement than storing the entire frontier. The optimality guarantee matches A\* when two conditions are met: the heuristic must be admissible and memory must be sufficient. The time complexity is O(b^d) but includes an important caveat: the algorithm may need to re-explore pruned subtrees when memory constraints force it to forget and later regenerate portions of the search space. Most importantly, the space complexity is O(memory limit), bounded by the user-specified constraint rather than growing exponentially with search depth. The algorithm achieves this through active memory management, pruning the worst (highest f-value) leaf nodes when the frontier reaches its size limit.
 
 **How It Works:**
 
-1. Maintains a node limit (default 10,000 nodes in our implementation)
-2. When memory is full, identifies the worst (highest f-value) leaf node
-3. Removes the worst leaf and stores its f-value in the parent's `forgotten_f` field
-4. If exploration later suggests a forgotten subtree might contain the solution, it can be regenerated
+SMA\* operates with a fixed node limit (10,000 nodes in our implementation by default). When the frontier reaches this limit, the algorithm must decide which node to sacrifice. It identifies the worst candidate—the leaf node with the highest f-value, indicating the least promising path. This node is removed from memory, but the algorithm doesn't forget it entirely: the f-value is stored in the parent's `forgotten_f` field, creating a breadcrumb trail. If exploration later suggests that a forgotten subtree might actually contain the solution, the algorithm can regenerate it by following these stored values.
 
-**Node Pruning Strategy:**
-
-When choosing which node to prune, SMA* selects the leaf node with:
-- Highest f-value (least promising)
-- Among ties, prefers shallower nodes (lower g-value)
+The pruning strategy is carefully designed to minimize information loss. Among leaf nodes, SMA\* chooses the one with the highest f-value as the least promising candidate. When multiple nodes tie for the highest f-value, the algorithm breaks ties by preferring shallower nodes (those with lower g-values), since deeper nodes represent more invested computational effort.
 
 **Performance:**
 
-For puzzles solvable within the memory limit, SMA* performs identically to A*:
-- SMA* with Manhattan distance: 11 iterations, max frontier 15
-- SMA* with Hamming distance: 19 iterations, max frontier 24
-
-For problems exceeding the memory limit, SMA* trades time for space by re-exploring pruned subtrees.
+For puzzles solvable within the memory limit, SMA* performs identically to A*. When memory is exceeded, SMA* trades time for space by re-exploring pruned subtrees, and may sacrifice optimality with weak heuristics. Detailed analysis appears in Sections 4.6 and 5.3.
 
 ### 3.4 Heuristic Functions
 
@@ -363,17 +271,11 @@ Manhattan distance is admissible for the 15-puzzle. Each tile must move at least
 
 **Effectiveness:**
 
-Manhattan distance is highly effective for sliding puzzles because:
-- It accurately captures the minimum work needed (each tile's minimum moves)
-- It provides strong guidance without being too expensive to compute
-- It's significantly more informed than simpler heuristics like Hamming distance
+Manhattan distance proves highly effective for sliding puzzles for several compelling reasons. First, it accurately captures the minimum work needed—each tile must move at least its Manhattan distance to reach the goal position, providing a tight lower bound on the solution cost. Second, it strikes an excellent balance between accuracy and computational cost, providing strong guidance toward the goal without requiring expensive calculations at each state evaluation. Finally, it's significantly more informed than simpler alternatives like Hamming distance, offering fine-grained numerical estimates rather than crude binary classifications of tile positions.
 
 **Performance:**
 
-From our test results, Manhattan distance achieves exceptional efficiency:
-- A* Manhattan: 14 iterations (99.7% reduction vs uninformed)
-- Best-First Manhattan: 11 iterations
-- Maximum frontier size: only 15-18 states
+Manhattan distance achieves exceptional efficiency across all test cases. Comparative performance data is presented in Section 5.2.
 
 #### 3.4.2 Hamming Distance (Misplaced Tiles)
 
@@ -393,22 +295,13 @@ Hamming distance is admissible because each misplaced tile requires at least one
 
 **Comparison with Manhattan Distance:**
 
-Hamming distance is less informed than Manhattan distance:
-- **Hamming**: Counts tiles that need to move (binary: wrong or right)
-- **Manhattan**: Measures how far each tile needs to move (quantitative distance)
+Hamming distance is fundamentally less informed than Manhattan distance due to the granularity of information each heuristic captures. Hamming distance operates in binary mode, simply counting whether each tile is wrong or right in its current position. Manhattan distance, by contrast, measures how far each tile needs to move, providing quantitative distance information that creates a much more detailed landscape of the search space.
 
-For example, if a tile is 5 positions away:
-- Hamming distance: contributes 1 (just "wrong position")
-- Manhattan distance: contributes 5 (actual distance)
+The difference becomes stark in concrete examples. Consider a tile that sits 5 positions away from its goal location. Hamming distance contributes merely 1 to the heuristic value, treating this severely misplaced tile identically to one that's only a single move away. Manhattan distance contributes the full 5, accurately reflecting the actual work required to correct this tile's position.
 
 **Performance:**
 
-Test results show Hamming distance is less efficient than Manhattan:
-- A* Hamming: 24 iterations vs Manhattan's 14 (71% more)
-- Best-First Hamming: 20 iterations vs Manhattan's 11 (82% more)
-- Maximum frontier: 26-31 states vs Manhattan's 15-18
-
-While still dramatically better than uninformed search, Hamming distance provides weaker guidance than Manhattan distance for sliding puzzles.
+Hamming distance is less efficient than Manhattan distance but still dramatically better than uninformed search. Detailed comparative analysis is provided in Section 5.2.
 
 ## 4. Experimental Results
 
@@ -558,9 +451,9 @@ Table 1 presents the performance of uninformed search algorithms on the 10-move 
 
 **Observations from Table 1:**
 
-- **BFS**: All move orderings found the optimal 10-move solution. Iterations ranged from 2,618 (RDUL) to 4,848 (UDLR), showing 85% variation. Max frontier ranged from 2,824 to 5,061 states, confirming O(b^d) space complexity.
-- **DFS**: Solution lengths varied from 10-12 moves (occasionally suboptimal). Iterations extremely variable: 7,642 (RDUL) to 203,465 (DULR), demonstrating 27× variance. Max frontier constant at 15 states (depth limit), validating O(d) space complexity.
-- **IDDFS**: All orderings found optimal 10-move solution. Iterations ranged from 6,890 (LRUD) to 9,814 (UDLR). Max frontier constant at 10 states (solution depth), confirming O(d) space complexity. IDDFS performed 2× more iterations than BFS due to re-exploration (6,890 vs 3,470 for LRUD) but used 500× less memory.
+- **BFS**: All orderings achieved optimal 10-move solutions with 85% iteration variance (2,618-4,848) and max frontier 2,824-5,061 states.
+- **DFS**: Solutions varied 10-12 moves with extreme iteration variance (27×, from 7,642 to 203,465) and constant 15-state frontier.
+- **IDDFS**: All orderings optimal with 2× more iterations than BFS but 500× less memory (10 vs 5,061 max frontier).
 
 #### 4.3.2 Informed Search Results
 
@@ -582,12 +475,9 @@ Table 2 shows the performance of informed search algorithms with different heuri
 
 **Observations from Table 2:**
 
-- **A* with Manhattan**: 14 iterations, 18 max frontier (99.7% reduction vs BFS, 99.6% reduction in memory)
-- **A* with Hamming**: 24 iterations, 31 max frontier (71% more iterations than Manhattan, still 99.5% better than uninformed BFS)
-- **A* with h=0**: 4,848 iterations, identical to BFS, validating that A* reduces to BFS when h=0
-- **Best-First**: Manhattan variant achieved optimal solution (10 moves) with only 11 iterations, fewer than A* due to greedy nature
-- **SMA***: Performance nearly identical to A* (memory limit of 10,000 nodes never triggered on this easy puzzle)
-- **Heuristic comparison**: Manhattan distance provides superior guidance (14 iterations vs 24 for Hamming, a 42% reduction)
+- **A* with h=0**: Identical to BFS (4,848 iterations), confirming A* reduces to BFS without heuristic guidance
+- **Heuristics**: Manhattan dramatically outperformed Hamming (11-14 vs 19-24 iterations), though both vastly improved over h=0
+- **SMA***: Performed identically to A* as memory limit was not reached
 
 ### 4.4 Experiment 2: Medium Puzzle (20 Moves, 4×4)
 
@@ -607,12 +497,10 @@ This experiment tested informed search algorithms on the puzzle shown in Figure 
 
 **Observations from Table 3:**
 
-- **Best-First Search**: Fast but suboptimal. Manhattan variant found 26-move solution (30% longer than optimal) in only 0.08s. Hamming variant found 30-move solution (50% longer) with 4.3× more iterations than Manhattan.
-- **A* with Manhattan**: Optimal 20-move solution with 828 iterations and 861 max frontier. Highly efficient with strong heuristic.
-- **A* with Hamming**: Still optimal (20 moves) but required 8.3× more iterations than Manhattan (6,867 vs 828). Weaker heuristic necessitates more exploration.
-- **A* with h=0**: Optimal but extremely expensive - 2,583,816 iterations taking 425.63s (equivalent to BFS). Demonstrates absolute necessity of heuristics, performing 3,119× more iterations than A* Manhattan.
-- **SMA* performance**: Identical to A* for both heuristics (memory limit of 10,000 nodes not reached as both used ~7,000 states).
-- **Heuristic quality dominance**: Manhattan 8.3× better than Hamming, 3,119× better than h=0
+- **Best-First**: Fast (0.08-0.15s) but suboptimal (26-30 vs optimal 20 moves)
+- **A* with h=0**: 2.5M iterations and 425s, demonstrating the critical importance of heuristics
+- **Manhattan vs Hamming**: Both achieved optimality, but Manhattan used 8× fewer iterations (828 vs 6,867)
+- **SMA***: Matched A* exactly as memory limit was not reached
 
 ### 4.5 Experiment 3: Large State Space (20 Moves, 5×5)
 
@@ -631,13 +519,9 @@ This experiment evaluated algorithm scalability using the 5×5 puzzle shown in F
 
 **Observations from Table 4:**
 
-**Counter-Intuitive Discovery:** Despite having a much larger state space (25!/2 vs 16!/2 possible configurations), the 5×5 puzzle was dramatically easier for informed search than the 4×4 20-move puzzle (Table 3).
-
-- **A* with Manhattan**: Only 29 iterations compared to 828 for the 4×4 puzzle (96.5% reduction). Extremely efficient despite larger state space.
-- **A* with Hamming**: Only 39 iterations compared to 6,867 for the 4×4 puzzle (99.4% reduction). Even the weaker Hamming heuristic becomes highly effective.
-- **Best-First**: Suboptimal solutions (26 moves vs optimal 20) consistent with 4×4 results. Hamming variant required 16× more iterations than Manhattan (2,425 vs 148).
-- **SMA* performance**: Perfect match with A* for both heuristics (memory not constrained, frontiers of 34 and 41 well below 10,000 limit).
-- **Puzzle configuration significance**: The 5×5 puzzle proved easier because tile positions aligned favorably with Manhattan distance, creating a clearer gradient toward the goal. This demonstrates that with effective heuristics, the quality of guidance matters far more than the size of the search space.
+- **Counter-intuitive result**: Despite vastly larger state space, required far fewer iterations than 4×4 20-move puzzle (29 vs 828 for Manhattan)
+- **A* efficiency**: Both heuristics achieved exceptional performance (29-39 iterations)
+- **Key insight**: Puzzle configuration and heuristic alignment matter more than state space size (detailed analysis in Section 5.4)
 
 ### 4.6 Experiment 4: Hard Puzzle (28 Moves, 4×4)
 
@@ -658,75 +542,13 @@ The final experiment used the challenging puzzle shown in Figure 4, specifically
 
 **Observations from Table 5:**
 
-#### 4.6.1 Performance at Memory Limits
+- **Best-First**: Fast (0.59-1.64s) but highly suboptimal (52 vs 28 optimal moves)
+- **A* heuristic comparison**: Manhattan achieved optimality 33× faster than Hamming (15,045 vs 492,185 iterations)
+- **SMA* memory-optimality trade-off**: Manhattan maintained optimality despite memory limits (but 5.8× slower), while Hamming yielded suboptimal solution (32 vs 28 moves)
 
-- **Best-First Search**: Highly suboptimal - found 52-move solutions (86% longer than optimal 28 moves). Manhattan variant fastest (0.59s) but demonstrates greedy failure. Hamming required 5.7× more iterations than Manhattan.
+#### 4.6.2 Key Finding: Memory-Optimality Trade-off
 
-- **A* with Manhattan**: Optimal 28-move solution with 15,045 iterations. Frontier of 14,089 stayed just below SMA* memory limit.
-
-- **A* with Hamming**: Still optimal but massively more expensive - 33× more iterations (492,185 vs 15,045) and 32× larger frontier (460,553 vs 14,089) compared to Manhattan. Frontier far exceeds SMA* memory limit.
-
-- **SMA* with Manhattan**: Found optimal 28-move solution with same iteration count as A* (15,045). Memory limit reached (capped at 10,000), but optimal path preserved. However, 5.8× slower than A* (29.31s vs 5.06s) due to memory management overhead.
-
-- **SMA* with Hamming**: **SUBOPTIMAL** - found 32-move solution instead of optimal 28 (14% longer). Memory constraint forced pruning of the optimal path. Demonstrated 73% reduction in iterations vs A* (130,956 vs 492,185) and 98% reduction in memory (10,000 vs 460,553), but sacrificed optimality.
-
-#### 4.6.2 Memory vs Optimality Trade-off
-
-This experiment provides clear evidence of SMA*'s fundamental trade-off between memory and optimality:
-
-**When Memory is Sufficient (Manhattan heuristic):**
-
-- SMA* finds optimal solution like A*
-- Same iteration count (15,045)
-- Slower due to memory management overhead (5.8× slower)
-- Memory limit reached but optimal path preserved
-
-**When Memory is Insufficient (Hamming heuristic):**
-
-- SMA* sacrifices optimality to maintain memory bounds
-- Suboptimal solution: 32 moves vs optimal 28 (14% longer)
-- Pruned the optimal path due to weaker heuristic guidance
-- Demonstrates graceful degradation under memory pressure
-
-**Heuristic Quality Critical for SMA*:**
-
-- Strong heuristic (Manhattan): Keeps frontier compact, enables optimality within memory limit
-- Weak heuristic (Hamming): Frontier explodes, forces suboptimal pruning
-- Manhattan 33× more efficient than Hamming for this puzzle
-
-### 4.7 Heuristic Function Comparison Across All Experiments
-
-Analyzing heuristic performance across all difficulty levels reveals consistent patterns:
-
-**Manhattan Distance Superiority:**
-
-| Puzzle Difficulty | Manhattan Iterations | Hamming Iterations | Reduction |
-|-------------------|---------------------|-------------------|-----------|
-| 10-move (4×4)     | 14                  | 24                | 42%       |
-| 20-move (4×4)     | 828                 | 6,867             | 88%       |
-| 20-move (5×5)     | 29                  | 39                | 26%       |
-| 28-move (4×4)     | 15,045              | 492,185           | 97%       |
-
-**Key Observations:**
-
-1. **Manhattan advantage grows with difficulty:** 42% reduction on easy puzzles → 97% on hard puzzles
-2. **Hamming degrades exponentially:** From 24 iterations (easy) to 492,185 (hard) - a 20,000× increase
-3. **Manhattan scales linearly:** From 14 iterations (easy) to 15,045 (hard) - a 1,000× increase
-4. **5×5 anomaly:** Both heuristics extremely effective due to favorable configuration
-
-**Why Manhattan Outperforms Hamming:**
-
-- **Manhattan:** Captures distance information (how far each tile must move)
-- **Hamming:** Binary information only (tile right or wrong)
-- **Sliding puzzles favor Manhattan:** Distance matters more than mere displacement
-- **Hamming misses guidance:** Two tiles out of place by 1 vs 5 positions appear identical
-
-**Practical Implications:**
-
-- Always use Manhattan distance for sliding puzzles when possible
-- Hamming acceptable for easy puzzles but catastrophic for hard ones
-- On 28-move puzzle: Manhattan takes 5 seconds, Hamming takes 83 seconds (16× slower)
-- SMA* with Hamming loses optimality; with Manhattan stays optimal
+This experiment demonstrates SMA*'s fundamental trade-off: with a strong heuristic (Manhattan), SMA* maintained optimality despite memory constraints, while with a weaker heuristic (Hamming), memory pressure forced acceptance of a suboptimal solution.
 
 ## 5. Analysis and Discussion
 
@@ -747,95 +569,78 @@ Table 6 summarizes the key characteristics of all six algorithms across optimali
 
 **Performance Patterns:**
 
-- **Uninformed vs Informed:** Manhattan-guided A* achieves 99.7% reduction in iterations compared to BFS (14 vs 4,848)
-- **Memory vs Optimality Trade-off:** IDDFS sacrifices time (2× more iterations than BFS) for 500× memory reduction while maintaining optimality
-- **SMA* Adaptability:** Matches A* when memory sufficient, degrades gracefully when constrained
-- **Best-First Risk:** 86% faster than A* on 28-move puzzle (0.59s vs 5.06s) but 86% worse solution quality (52 vs 28 moves)
+Several striking patterns emerge from the experimental data. The contrast between uninformed and informed search is dramatic: Manhattan-guided A\* achieves a 99.7% reduction in iterations compared to BFS, examining only 14 states instead of 4,848 to solve the same puzzle. This isn't mere incremental improvement—it's a fundamental transformation in search efficiency.
+
+The memory-optimality trade-off manifests clearly in IDDFS, which accepts a 2× iteration penalty compared to BFS in exchange for a 500× reduction in memory usage, all while maintaining the optimality guarantee. SMA\* demonstrates remarkable adaptability, matching A\*'s performance when memory is sufficient but degrading gracefully under constraints, trading time for space through subtree regeneration.
+
+Perhaps most illuminating is the risk-reward profile of Best-First Search. On the challenging 28-move puzzle, it runs 86% faster than A\* (0.59s versus 5.06s), but this speed comes at a steep price: 86% worse solution quality (52 moves instead of the optimal 28). This exemplifies the fundamental tension between search speed and solution optimality.
 
 ### 5.2 Heuristic Effectiveness
 
 The choice of heuristic function profoundly impacts informed search performance, with effects that amplify as puzzle difficulty increases.
 
-**Manhattan Distance Characteristics:**
+**Table 7: Manhattan vs Hamming Heuristic Comparison (A* algorithm)**
 
-Manhattan distance proved consistently superior across all experiments. It provides fine-grained guidance by measuring the exact minimum distance each tile must travel. For the 15-puzzle, this captures the essential structure of the problem: tiles must slide specific distances along orthogonal paths.
+| Puzzle Difficulty | Manhattan Iterations | Hamming Iterations | Efficiency Gain | Manhattan Time | Hamming Time |
+|-------------------|---------------------|-------------------|-----------------|----------------|---------------|
+| 10-move (4×4)     | 14                  | 24                | 42%             | 0.01s          | 0.01s         |
+| 20-move (4×4)     | 828                 | 6,867             | 88%             | 0.29s          | 1.11s         |
+| 20-move (5×5)     | 29                  | 39                | 26%             | 0.02s          | 0.01s         |
+| 28-move (4×4)     | 15,045              | 492,185           | 97%             | 5.06s          | 83.12s        |
 
-The efficiency gains were dramatic:
-- Easy puzzles (10 moves): 42% fewer iterations than Hamming
-- Medium puzzles (20 moves): 88% fewer iterations than Hamming  
-- Hard puzzles (28 moves): 97% fewer iterations than Hamming
+**Key Patterns:**
 
-This escalating advantage occurs because Manhattan distance provides increasingly valuable guidance as the search tree deepens. On the 28-move puzzle, Manhattan examined 15,045 states while Hamming examined 492,185 states - a 33-fold difference.
+Three critical patterns emerge from the comparative data. First, Manhattan's advantage over Hamming scales dramatically with puzzle difficulty. On easy puzzles, Manhattan achieves a modest 42% efficiency gain, but this advantage grows to 97% on hard puzzles—as problems become more challenging, the superior information content of Manhattan distance becomes increasingly decisive.
 
-**Hamming Distance Limitations:**
+Second, the heuristics show radically different scalability profiles. As puzzle difficulty increases from 10 to 28 moves, Hamming distance degrades exponentially with a 20,000× growth in iterations (from 24 to 492,185 states examined). Manhattan distance also grows but far more gracefully, showing only a 1,000× increase (from 14 to 15,045 iterations). This difference in growth rates explains why Manhattan remains practical for hard puzzles while Hamming becomes computationally prohibitive.
 
-Hamming distance counts misplaced tiles without measuring displacement magnitude. A tile one position away contributes identically to a tile five positions away, making the heuristic less informative for sliding puzzles.
+Third, the 5×5 puzzle presents an intriguing anomaly where both heuristics perform exceptionally well, requiring only 29-39 iterations despite the vastly larger state space. This exceptional performance stems from the particular puzzle configuration, which happened to align favorably with both heuristics' guidance mechanisms.
 
-The consequences grow severe with difficulty:
-- 10-move puzzle: 24 iterations (acceptable)
-- 20-move puzzle: 6,867 iterations (8× worse than Manhattan)
-- 28-move puzzle: 492,185 iterations (33× worse than Manhattan)
+**Why Manhattan Dominates:**
 
-**Impact on SMA*:**
+Manhattan distance measures exact minimum tile displacement, capturing the essential sliding puzzle structure with fine-grained guidance. Hamming distance only counts misplaced tiles—treating a tile one position away identically to one five positions away—missing critical distance information.
 
-Heuristic quality becomes critical when memory is constrained. On the 28-move puzzle:
-- **SMA* with Manhattan:** Optimal 28-move solution within 10,000-node memory limit
-- **SMA* with Hamming:** Suboptimal 32-move solution, forced to prune optimal path
+**Impact on Memory-Bounded Search:**
 
-This demonstrates that weak heuristics can cause SMA* to sacrifice solution quality, even when a strong heuristic would maintain optimality within the same memory bounds.
+Heuristic quality becomes critical under memory constraints. On the 28-move puzzle with 10,000-node limit, SMA* with Manhattan maintained optimality while Hamming yielded a suboptimal solution (32 vs 28 moves), demonstrating that weak heuristics cause frontier explosion and premature pruning of optimal paths.
 
 ### 5.3 Memory-Space Trade-offs
 
-The experimental results validate theoretical space complexity predictions and reveal practical trade-offs between memory usage and search efficiency.
+Experimental results validate theoretical space complexity predictions and reveal practical trade-offs between memory usage and search efficiency.
 
 **BFS Memory Explosion:**
 
-BFS exhibits O(b^d) space complexity as predicted. The 10-move puzzle required a maximum frontier of 5,061 states, while the 20-move puzzle (with h=0) ballooned to 2,393,992 states - a 473-fold increase for only doubling the solution depth. This exponential growth makes BFS impractical for deep solutions despite its optimality guarantee.
+BFS exhibits the O(b^d) space complexity predicted by theory, but the experimental data reveals just how devastating this exponential growth becomes in practice. The 10-move puzzle required a frontier of 5,061 states—already substantial but manageable. When puzzle difficulty doubled to 20 moves, however, the frontier exploded to 2,393,992 states, a 473-fold increase. This exponential relationship between search depth and memory consumption makes BFS impractical for deep solutions, despite its optimality guarantee. The algorithm's memory appetite simply grows too voracious too quickly.
 
 **IDDFS Memory Efficiency:**
 
-IDDFS achieves O(d) space complexity by storing only the current search path. On the 10-move puzzle, IDDFS maintained a maximum frontier of just 10 states compared to BFS's 5,061 - a 500-fold reduction. The cost is computational redundancy: IDDFS performed 6,890 iterations versus BFS's 3,470 (2× more work), but this is a favorable trade-off when memory is constrained.
+IDDFS achieves the O(d) space complexity that makes it viable for deep searches, and the experimental results validate this theoretical advantage spectacularly. Where BFS required 5,061 frontier states for the 10-move puzzle, IDDFS maintained a maximum frontier of just 10 states—a 500-fold reduction that transforms memory requirements from prohibitive to trivial. This dramatic improvement comes at a cost: computational redundancy that leads to roughly 2× more iterations than BFS. However, in memory-constrained scenarios, this trade-off heavily favors IDDFS. Processing twice as many states is manageable; storing 500 times as many states often isn't.
 
-**SMA* Behavior Under Memory Pressure:**
+**SMA\* Adaptive Behavior:**
 
-SMA* demonstrates two distinct operating regimes:
+SMA\* demonstrates two distinct operating regimes that depend critically on memory availability. When memory is sufficient—meaning the required frontier size stays below the configured limit—SMA\* behaves essentially identically to A\*, with only a modest 14% overhead from memory management bookkeeping. This represents the algorithm's best-case scenario: optimal solutions with bounded memory at minimal cost.
 
-*When memory is sufficient:* SMA* behaves identically to A*. On the 20-move puzzle with Manhattan distance, both algorithms performed exactly 828 iterations with an 861-node frontier - well below the 10,000-node limit. However, SMA* incurred 14% overhead (0.33s vs 0.29s) due to memory management bookkeeping.
+When memory becomes constrained, however, SMA\* must begin pruning nodes as the frontier reaches its limit, and the outcome depends critically on heuristic strength. With Manhattan distance on the 28-move puzzle, SMA\* successfully maintained optimality despite the 10,000-node limit, regenerating pruned subtrees as needed to find the optimal 28-move solution. The cost was a 5.8× time penalty from repeated node regeneration, but optimality was preserved.
 
-*When memory is constrained:* SMA* begins pruning nodes when the frontier reaches its limit. On the 28-move puzzle with Hamming distance, A* required 460,553 frontier nodes while SMA* was capped at 10,000. This forced SMA* to prune aggressively, ultimately yielding a suboptimal 32-move solution instead of the optimal 28 moves.
-
-Interestingly, on the 28-move puzzle with Manhattan distance, SMA* achieved optimality despite reaching the 10,000-node limit, taking 29.31 seconds compared to A*'s 5.06 seconds - a 5.8× slowdown caused by repeated node regeneration. This demonstrates that SMA* can maintain optimality even under memory pressure if the heuristic is strong enough to keep the frontier compact.
+With Hamming distance on the same puzzle, the story differs dramatically. A\* required 460,553 frontier nodes to find the optimal solution—far exceeding the 10,000-node limit. Under this severe memory pressure, SMA\* couldn't maintain the optimal path and yielded a suboptimal 32-move solution instead of the optimal 28 moves. This stark contrast demonstrates that SMA\* can maintain optimality under memory pressure only when the heuristic is strong enough to keep the frontier compact enough to fit within memory bounds.
 
 ### 5.4 Puzzle Configuration Impact
 
-Counter-intuitively, state space size does not directly correlate with puzzle difficulty when informed search is used.
+**State Space Size vs Actual Difficulty:**
 
-**The 5×5 Puzzle Anomaly:**
+One of the most counter-intuitive findings challenges a fundamental assumption about search difficulty: state space size does not correlate with actual search difficulty for informed algorithms. The 5×5 puzzle has approximately 10^24 reachable states compared to the 4×4 puzzle's 10^13 states—eleven orders of magnitude larger. Yet when solving 20-move configurations, the 5×5 puzzle proved 28 times easier, requiring only 29 iterations compared to the 4×4 puzzle's 828 iterations when using Manhattan distance.
 
-The 5×5 puzzle has a vastly larger state space than the 4×4 puzzle (approximately 10^24 vs 10^13 reachable states). Despite this, the 5×5 20-move puzzle proved dramatically easier than the 4×4 20-move puzzle:
+This remarkable result occurred because the particular 5×5 configuration aligned favorably with the Manhattan distance heuristic. The tiles happened to start closer to their goal positions on average, allowing the heuristic to provide exceptionally strong guidance toward the solution. The lesson is profound: for informed search, what matters is not the theoretical size of the state space, but rather how well the initial configuration aligns with the heuristic function's guidance mechanism.
 
-- 4×4 puzzle: 828 iterations with Manhattan distance
-- 5×5 puzzle: 29 iterations with Manhattan distance (96.5% reduction)
+**Move Ordering Sensitivity:**
 
-This 28-fold improvement occurred because the 5×5 puzzle configuration aligned favorably with the Manhattan distance heuristic. The initial state had tiles closer to their goal positions on average, allowing the heuristic to provide exceptionally strong guidance toward the solution.
+Uninformed search algorithms exhibit extreme sensitivity to move ordering. BFS showed 85% variance in iteration counts (ranging from 2,618 to 4,848) based purely on the sequence in which moves were considered. DFS proved even more sensitive with a 27-fold variance (7,642 to 203,465 iterations) depending on move order—the difference between solving quickly and grinding through hundreds of thousands of states.
 
-**Move Order Significance:**
-
-For uninformed search, move ordering profoundly affects performance. On the 10-move puzzle:
-- BFS RDUL: 2,618 iterations (best)
-- BFS UDLR: 4,848 iterations (worst)
-- Variance: 85% between best and worst
-
-DFS showed even greater sensitivity, with iteration counts varying 27-fold (7,642 to 203,465) based solely on move order.
-
-In contrast, informed search with good heuristics exhibits minimal sensitivity to move ordering. A* with Manhattan distance consistently found solutions efficiently regardless of the move exploration sequence, as the heuristic-driven priority queue naturally guides the search toward optimal paths.
+Informed search with strong heuristics completely eliminates this sensitivity. The priority queue ordering by heuristic value naturally guides exploration along promising paths regardless of the arbitrary sequence used to enumerate moves. The heuristic's strong signal overwhelms any bias introduced by move ordering.
 
 **Implications:**
 
-- State space size matters far less than puzzle configuration and heuristic alignment
-- Uninformed search requires careful move ordering tuning for each puzzle
-- Informed search with strong heuristics eliminates move ordering concerns
-- Puzzle difficulty for informed search depends on how well the heuristic captures the problem structure
+These patterns reveal three critical insights. First, puzzle difficulty for informed search depends on heuristic alignment rather than state space size—a well-aligned heuristic on a huge state space outperforms a poorly-aligned heuristic on a small space. Second, uninformed search requires careful, puzzle-specific tuning of move ordering to achieve reasonable performance, making these algorithms brittle and configuration-dependent. Third, strong heuristics eliminate configuration-dependent performance variance, providing robust performance across different puzzle configurations without manual tuning.
 
 ## 6. Conclusions
 
@@ -843,49 +648,27 @@ This comprehensive experimental evaluation of six search algorithms on the 15-pu
 
 **Summary of Key Findings:**
 
-The experiments revealed that algorithm selection depends critically on the problem constraints:
+Four fundamental insights emerge from this comprehensive evaluation. First, heuristic quality dominates all other factors in determining search performance. Manhattan distance achieved a 97% efficiency gain over Hamming distance on hard puzzles, and crucially, this gap widened progressively as puzzle difficulty increased. The choice of heuristic isn't just important—it's the primary determinant of practical performance.
 
-1. **Heuristic quality dominates performance:** Manhattan distance reduced iterations by 42% to 97% compared to Hamming distance, with the advantage growing as puzzle difficulty increased. On the hardest puzzle tested, Manhattan was 33× more efficient.
+Second, memory-optimality trade-offs are fundamental and unavoidable in search algorithm design. BFS guarantees optimality but demands O(b^d) space that grows exponentially with depth. IDDFS maintains optimality while achieving O(d) space complexity by accepting a 2× iteration penalty. SMA\* offers bounded space complexity with conditional optimality that depends on whether memory constraints force premature pruning. There is no free lunch—algorithms must choose where to pay their costs.
 
-2. **Memory-optimality trade-offs are unavoidable:** BFS guarantees optimality but requires exponential memory (5,061 to 2.4 million frontier nodes). IDDFS achieves 500× memory reduction while maintaining optimality by accepting 2× redundant computation. SMA* provides bounded memory with conditional optimality.
+Third, puzzle configuration trumps state space size in determining actual difficulty. The 5×5 puzzle proved 28 times easier than the 4×4 puzzle despite having a state space 10^11 times larger. What matters is not the theoretical size of the haystack, but whether the needle happens to be near where your heuristic tells you to look.
 
-3. **State space size misleads:** The 5×5 puzzle with 10^11 times more states proved 28× easier than a 4×4 puzzle when using informed search, demonstrating that heuristic alignment matters more than theoretical state space size.
+Fourth, memory pressure amplifies the importance of heuristic quality in dramatic ways. Under identical 10,000-node memory limits, SMA\* with Manhattan distance maintained optimality through careful node regeneration, while SMA\* with Hamming distance was forced to accept a suboptimal solution. When memory is constrained, a weak heuristic doesn't just slow you down—it can prevent you from finding the best answer entirely.
 
-4. **Memory pressure amplifies heuristic importance:** SMA* with Manhattan distance maintained optimality under 10,000-node memory constraint, while SMA* with Hamming distance produced 14% suboptimal solutions under identical constraints.
+**Algorithm Selection Guide:**
 
-**Algorithm Recommendations:**
+| Scenario | Recommended Algorithm | Rationale |
+|----------|----------------------|------------|
+| Optimal, ample memory | **A\* + Manhattan** | Best efficiency, guaranteed optimality |
+| Optimal, severe memory limits | **IDDFS** | O(d) space, guaranteed optimality, 2× iteration cost |
+| Optimal, moderate memory limits | **SMA\* + Manhattan** | Bounded memory, maintains optimality with strong heuristic |
+| Fast approximate solution | **Best-First + Manhattan** | High speed, acceptable quality degradation |
 
-Based on experimental evidence, we recommend the following algorithm selections for different scenarios:
+**Implementation Guidelines:**
 
-*Scenario 1 - Optimal solution with ample memory:* Use **A\* with Manhattan distance**. This combination provides optimal solutions with minimal computational work (14 to 15,045 iterations across all test cases). Example: 20-move puzzle solved in 0.29 seconds with 828 iterations.
+Three practical guidelines emerge from these findings. First, always use Manhattan distance for any non-trivial puzzle. Hamming distance remains acceptable only for very simple puzzles solvable in 15 moves or fewer, where its computational simplicity might offer marginal benefits. Beyond this threshold, Manhattan distance's superior guidance becomes essential.
 
-*Scenario 2 - Optimal solution with severe memory constraints:* Use **IDDFS**. When memory is extremely limited and optimality cannot be sacrificed, IDDFS guarantees optimal solutions with O(d) space complexity. Accept 2× iteration overhead as the cost of memory efficiency. Example: 10-move puzzle using 10 frontier nodes vs BFS's 5,061.
+Second, when using SMA\*, actively monitor solution quality rather than assuming optimality. Degradation in solution quality serves as a critical diagnostic signal indicating either insufficient memory allocation or a heuristic too weak for the problem at hand. The algorithm won't necessarily tell you it's compromising—you must watch for the symptoms.
 
-*Scenario 3 - Optimal solution with moderate memory constraints:* Use **SMA\* with Manhattan distance**. When memory is limited but not severely so, SMA* can maintain optimality if given sufficient nodes (typically 10,000+) and paired with a strong heuristic. Monitor solution quality to detect memory-induced degradation. Example: 28-move puzzle optimal in 29.31 seconds with 10,000-node limit.
-
-*Scenario 4 - Quick approximate solution:* Use **Best-First with Manhattan distance**. When optimality is less important than speed, Best-First finds near-optimal solutions extremely quickly. Example: 28-move puzzle solved in 0.59 seconds (86% faster than A*) with a 52-move solution (86% longer than optimal).
-
-**Practical Implications:**
-
-For sliding puzzle applications:
-- Always prefer Manhattan distance over Hamming distance unless computation cost is prohibitive
-- Monitor SMA* solution quality; degradation indicates insufficient memory or weak heuristic
-- For web/mobile applications with memory limits, use SMA* with generous node limits (10,000+)
-- For offline solvers with ample memory, A* with Manhattan distance is the clear choice
-- Uninformed search (BFS/IDDFS) is viable only for puzzles solvable in ≤15 moves
-
-**Future Work:**
-
-Several directions could extend this research:
-
-1. **Pattern Database Heuristics:** Implement pattern databases that precompute exact solution costs for tile subsets, providing perfect heuristics for those subsets and potentially achieving even greater efficiency than Manhattan distance.
-
-2. **Adaptive Memory Management:** Develop SMA* variants that dynamically adjust memory limits based on available system resources and solution progress, maximizing memory utilization without risking system instability.
-
-3. **Larger Puzzles:** Extend experiments to 5×5 and 6×6 puzzles with deeper solutions (40+ moves) to evaluate algorithm scalability and identify performance breaking points.
-
-4. **Parallel Search:** Investigate parallel implementations of A* and SMA* to leverage multi-core processors, potentially achieving significant speedups for hard puzzles.
-
-5. **Learned Heuristics:** Explore neural network-based heuristics trained on large puzzle datasets to potentially discover heuristics superior to Manhattan distance for specific puzzle classes.
-
-This work establishes a foundation for algorithm selection in sliding puzzle applications and demonstrates the critical importance of heuristic design and memory management in achieving practical search performance.
+Third, recognize that uninformed search algorithms remain viable only for very simple puzzles solvable in fewer than 10 moves. Beyond this point, the exponential growth in search effort makes these algorithms impractical compared to informed alternatives, regardless of implementation optimizations or move ordering strategies.
