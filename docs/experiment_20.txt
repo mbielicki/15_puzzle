@@ -7,8 +7,8 @@ Best-First h=2 (Hamming)       30       465             361             0.15    
 A* h=0 (Uninformed)            20       2,583,816       2,393,992       425.63       SUCCESS
 A* h=1 (Manhattan)             20       828             861             0.29         SUCCESS
 A* h=2 (Hamming)               20       6,867           7,119           1.11         SUCCESS
-SMA* h=1 (Manhattan)           20       819             872             0.33         SUCCESS
-SMA* h=2 (Hamming)             20       6,986           5,571           8.29         SUCCESS
+SMA* h=1 (Manhattan)           20       828             861             0.33         SUCCESS
+SMA* h=2 (Hamming)             20       6,867           7,119           1.35         SUCCESS
 ====================================================================================================
 
 PERFORMANCE ANALYSIS

@@ -55,9 +55,6 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
     # Format: (node)
     open_heap = [root]
     
-    # Track all nodes in memory (both open and closed)
-    nodes_in_memory = {puzzle.__repr__(): root}
-    
     # Visited states (for quick lookup)
     visited = set()
     
@@ -81,8 +78,10 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
                 logger.info(f"Solution found! Iterations: {iteration}, Moves: {len(current_puzzle.history)}, Max frontier: {max_frontier_size}")
             return (current_puzzle, iteration, max_frontier_size)
         
-        # Mark as visited
+        # Check if already visited (after popping, like A*)
         state = current_puzzle.__repr__()
+        if state in visited:
+            continue
         visited.add(state)
         
         # Check depth limit
@@ -107,31 +106,22 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
                     operation(new_puzzle)
                     new_state = new_puzzle.__repr__()
                     
-                    # Skip if already visited
-                    if new_state in visited:
-                        continue
-                    
                     new_g = len(new_puzzle.history)
                     new_h = heuristic(new_puzzle)
                     new_node = SMAStarNode(new_puzzle, new_g, new_h, parent=current_node, counter=counter)
                     counter += 1
                     successors.append((new_state, new_node))
         
-        # Add successors to open heap and track in memory
+        # Add successors to open heap
         for state, node in successors:
             # Memory management: if at capacity, remove worst leaf node
-            if len(nodes_in_memory) >= max_nodes:
+            if len(open_heap) >= max_nodes:
                 # Find the worst (highest f-value) leaf node in open heap
                 if open_heap:
                     # Remove the worst node (last in sorted order)
                     worst_node = max(open_heap, key=lambda n: (n.f, -n.g))
                     open_heap.remove(worst_node)
                     heapq.heapify(open_heap)
-                    
-                    # Remove from memory tracking
-                    worst_state = worst_node.puzzle.__repr__()
-                    if worst_state in nodes_in_memory:
-                        del nodes_in_memory[worst_state]
                     
                     # Store forgotten f-value in parent
                     if worst_node.parent:
@@ -142,7 +132,6 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
             
             # Add new node
             heapq.heappush(open_heap, node)
-            nodes_in_memory[state] = node
     
     if logger:
         logger.info(f"No solution found. Iterations: {iteration}, Depth limit: {depth_limit}, Max frontier: {max_frontier_size}")
