@@ -8,19 +8,21 @@ from typing import Tuple, Optional
 class SMAStarNode:
     """Node class for SMA* algorithm to track f-values and maintain tree structure."""
     
-    def __init__(self, puzzle: Puzzle, g: int, h: int, parent=None):
+    def __init__(self, puzzle: Puzzle, g: int, h: int, parent=None, counter=0):
         self.puzzle = puzzle
         self.g = g  # Cost from start
         self.h = h  # Heuristic to goal
         self.f = g + h  # Total estimated cost
         self.parent = parent
         self.forgotten_f = None  # Best f-value of forgotten descendants
+        self.counter = counter  # For FIFO tie-breaking (same as A*)
     
     def __lt__(self, other):
-        # For heap ordering: prefer lower f, then higher g (deeper in tree)
+        # For heap ordering: prefer lower f, then FIFO order (lower counter)
+        # This matches A*'s behavior for consistency when memory is not constrained
         if self.f != other.f:
             return self.f < other.f
-        return self.g > other.g
+        return self.counter < other.counter
 
 
 def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: str = "UDLR", heuristic=None, logger: logging.Logger = None) -> Tuple[Optional[Puzzle], int, int]:
@@ -41,9 +43,13 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
     if heuristic is None:
         heuristic = manhattan_distance
     
+    # Counter for FIFO tie-breaking (matches A* behavior)
+    counter = 0
+    
     # Initialize with root node
     h = heuristic(puzzle)
-    root = SMAStarNode(puzzle, g=0, h=h)
+    root = SMAStarNode(puzzle, g=0, h=h, counter=counter)
+    counter += 1
     
     # Priority queue for open nodes (to be expanded)
     # Format: (node)
@@ -107,7 +113,8 @@ def sma_star(puzzle: Puzzle, depth_limit: int, max_nodes: int = 10000, order: st
                     
                     new_g = len(new_puzzle.history)
                     new_h = heuristic(new_puzzle)
-                    new_node = SMAStarNode(new_puzzle, new_g, new_h, parent=current_node)
+                    new_node = SMAStarNode(new_puzzle, new_g, new_h, parent=current_node, counter=counter)
+                    counter += 1
                     successors.append((new_state, new_node))
         
         # Add successors to open heap and track in memory
