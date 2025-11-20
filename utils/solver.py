@@ -28,7 +28,7 @@ def get_move_order(order_str, logger):
         return order_str.upper()
 
 
-def solve_puzzle(puzzle, algorithm, parameter, logger, depth_limit=30):
+def solve_puzzle(puzzle, algorithm, parameter, logger, depth_limit=60):
     """Solve the puzzle using the specified algorithm.
     
     Args:

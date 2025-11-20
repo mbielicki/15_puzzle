@@ -1,0 +1,41 @@
+====================================================================================================
+SUMMARY - Informed Search Algorithms on Harder Puzzle
+====================================================================================================
+Algorithm                      Moves    Iterations      Max Frontier    Time (s)     Status
+----------------------------------------------------------------------------------------------------
+Best-First h=1 (Manhattan)     52       1,839           1,414           0.59         SUCCESS
+Best-First h=2 (Hamming)       52       10,500          8,282           1.64         SUCCESS
+A* h=1 (Manhattan)             28       15,045          14,089          5.06         SUCCESS
+A* h=2 (Hamming)               28       492,185         460,553         83.12        SUCCESS
+SMA* h=1 (Manhattan)           28       15,045          10,000          29.31        SUCCESS
+SMA* h=2 (Hamming)             32       130,956         10,000          692.39       SUCCESS
+====================================================================================================
+
+PERFORMANCE ANALYSIS
+====================================================================================================
+
+Best Performance by Metric:
+----------------------------------------------------------------------------------------------------
+Fewest Iterations:  Best-First h=1 (Manhattan)     1,839 iterations
+Smallest Frontier:  Best-First h=1 (Manhattan)     1,414 states
+Fastest Time:       Best-First h=1 (Manhattan)     0.59s
+
+====================================================================================================
+Key Observations:
+
+Best-First is fast but not optimal: 52 moves vs optimal 28, but very quick (0.59s)
+
+A finds optimal solutions*:
+
+Manhattan: 28 moves, 15,045 iterations, 5.06s
+Hamming: 28 moves, 492,185 iterations, 83.12s (much worse with weaker heuristic)
+SMA hit the 10,000 memory limit*:
+
+Manhattan: Same 28 moves as A*, same iterations (15,045), but slower (29.31s vs 5.06s) due to memory management overhead
+Hamming: Suboptimal 32 moves (vs A*'s 28) because memory constraint forced pruning of the optimal path!
+Manhattan vs Hamming:
+
+Manhattan: 15,045 iterations
+Hamming: 492,185 iterations (33x more!)
+Manhattan is dramatically more effective
+The test clearly demonstrates SMA trading optimality for memory* when constrained - it found a 32-move solution instead of the optimal 28 when using Hamming heuristic with the 10,000 node limit.
