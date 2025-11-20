@@ -409,3 +409,322 @@ Test results show Hamming distance is less efficient than Manhattan:
 - Maximum frontier: 26-31 states vs Manhattan's 15-18
 
 While still dramatically better than uninformed search, Hamming distance provides weaker guidance than Manhattan distance for sliding puzzles.
+
+## 4. Experimental Results
+
+### 4.1 Test Methodology
+
+To comprehensively evaluate the search algorithms, we conducted experiments on four puzzles of varying difficulty levels. Each experiment used different puzzle configurations to test algorithm performance under different conditions.
+
+**Experiment 1: Easy Puzzle (10 moves)**
+
+The first test puzzle is a 4×4 configuration solvable in 10 moves, shown in Figure 1.
+
+```
+Figure 1: Initial state of 10-move puzzle
+┌────┬────┬────┬────┐
+│  1 │  2 │  3 │  4 │
+├────┼────┼────┼────┤
+│  6 │  9 │  7 │  8 │
+├────┼────┼────┼────┤
+│ 13 │  5 │ 10 │ 11 │
+├────┼────┼────┼────┤
+│ 14 │    │ 15 │ 12 │
+└────┴────┴────┴────┘
+```
+
+- Purpose: Baseline comparison of all algorithms on a simple puzzle
+- Algorithms tested: All 6 algorithms with various configurations (23 total tests)
+- Depth limit: 15 moves
+- Optimal solution: 10 moves
+
+**Experiment 2: Medium Puzzle (20 moves, 4×4)**
+
+The second test puzzle requires 20 moves for the optimal solution (Figure 2).
+
+```
+Figure 2: Initial state of 20-move puzzle (4×4)
+┌────┬────┬────┬────┐
+│  1 │  2 │  3 │  4 │
+├────┼────┼────┼────┤
+│  5 │ 11 │  8 │  6 │
+├────┼────┼────┼────┤
+│    │ 10 │ 14 │  7 │
+├────┼────┼────┼────┤
+│  9 │ 13 │ 15 │ 12 │
+└────┴────┴────┴────┘
+```
+
+- Purpose: Test informed search performance on moderate difficulty
+- Algorithms tested: Best-First, A*, SMA* with different heuristics
+- Depth limit: 30 moves
+- Optimal solution: 20 moves
+
+**Experiment 3: Large State Space (20 moves, 5×5)**
+
+The third puzzle uses a larger 5×5 grid to evaluate scalability (Figure 3).
+
+```
+Figure 3: Initial state of 20-move puzzle (5×5)
+┌────┬────┬────┬────┬────┐
+│  6 │  1 │  3 │  9 │  4 │
+├────┼────┼────┼────┼────┤
+│  2 │ 12 │  7 │  8 │  5 │
+├────┼────┼────┼────┼────┤
+│ 16 │ 11 │ 13 │ 14 │ 10 │
+├────┼────┼────┼────┼────┤
+│ 21 │ 17 │ 19 │    │ 15 │
+├────┼────┼────┼────┼────┤
+│ 22 │ 23 │ 18 │ 24 │ 20 │
+└────┴────┴────┴────┴────┘
+```
+
+- Purpose: Evaluate scalability to larger state spaces
+- Algorithms tested: Best-First, A*, SMA* with Manhattan and Hamming heuristics
+- Depth limit: 60 moves
+- Optimal solution: 20 moves
+
+**Experiment 4: Hard Puzzle (28 moves, 4×4)**
+
+The final test puzzle is the most challenging, requiring 28 moves (Figure 4).
+
+```
+Figure 4: Initial state of 28-move puzzle
+┌────┬────┬────┬────┐
+│    │  1 │  2 │  3 │
+├────┼────┼────┼────┤
+│  5 │  7 │  4 │ 15 │
+├────┼────┼────┼────┤
+│  9 │ 10 │  8 │ 11 │
+├────┼────┼────┼────┤
+│ 13 │ 14 │  6 │ 12 │
+└────┴────┴────┴────┘
+```
+
+- Purpose: Test memory constraints and heuristic effectiveness on difficult puzzles
+- Algorithms tested: Best-First, A*, SMA* with different heuristics
+- Depth limit: 60 moves
+- Optimal solution: 28 moves
+- Key objective: Demonstrate SMA* memory limits and optimality trade-offs
+
+**Testing Environment:**
+
+- Platform: Windows with PowerShell
+- Python Version: 3.13
+- Memory limit for SMA*: 10,000 nodes
+- Iteration counting: Total states examined during search
+- Frontier tracking: Maximum number of states held in memory simultaneously
+
+### 4.2 Performance Metrics Explained
+
+Each experiment tracked five key metrics to evaluate algorithm performance:
+
+**Moves:** Solution path length measured as the number of tile moves from initial state to goal state. Lower is better. The optimal solution length varies by puzzle difficulty (10, 20, or 28 moves in our experiments). This metric indicates solution quality.
+
+**Iterations:** Total number of states examined during the search process. Each iteration involves popping a state from the frontier, checking if it's the goal, and generating successor states. This metric indicates computational work and algorithmic efficiency.
+
+**Max Frontier:** Maximum number of states held in memory simultaneously during the search. This represents peak space complexity and validates theoretical O(b^d) vs O(d) predictions. Critical for comparing memory efficiency across algorithms.
+
+**Time (s):** Execution time in seconds from search start to solution discovery. Influenced by iterations, data structure operations, and heuristic computation cost. Useful for practical performance comparison.
+
+**Status:** Search outcome indicating SUCCESS (solution found), NO SOLUTION (search exhausted), INTERRUPTED (user cancelled), or EXCEPTION (error occurred). All experiments in this report show SUCCESS status.
+
+### 4.3 Experiment 1: Easy Puzzle (10 Moves)
+
+The first experiment used the 4×4 puzzle shown in Figure 1, testing all 23 algorithm configurations to establish baseline performance characteristics.
+
+#### 4.3.1 Uninformed Search Results
+
+Table 1 presents the performance of uninformed search algorithms on the 10-move puzzle.
+
+**Table 1: Uninformed Search Performance on 10-Move Puzzle**
+
+| Algorithm    | Order | Moves | Iterations | Max Frontier | Time (s) | Status  |
+|--------------|-------|-------|-----------|--------------|----------|---------|
+| BFS          | UDLR  | 10    | 4,848     | 5,061        | 0.96     | SUCCESS |
+| BFS          | DULR  | 10    | 4,817     | 5,036        | 1.01     | SUCCESS |
+| BFS          | LRUD  | 10    | 3,470     | 3,710        | 0.74     | SUCCESS |
+| BFS          | RDUL  | 10    | 2,618     | 2,824        | 0.59     | SUCCESS |
+| BFS          | RAND  | 10    | 4,512     | 4,716        | 0.97     | SUCCESS |
+| DFS          | UDLR  | 12    | 201,089   | 15           | 23.44    | SUCCESS |
+| DFS          | DULR  | 12    | 203,465   | 15           | 23.14    | SUCCESS |
+| DFS          | LRUD  | 10    | 95,493    | 15           | 10.89    | SUCCESS |
+| DFS          | RDUL  | 12    | 7,642     | 15           | 0.85     | SUCCESS |
+| DFS          | RAND  | 12    | 130,727   | 15           | 14.86    | SUCCESS |
+| IDDFS        | UDLR  | 10    | 9,814     | 10           | 1.10     | SUCCESS |
+| IDDFS        | DULR  | 10    | 9,704     | 10           | 1.09     | SUCCESS |
+| IDDFS        | LRUD  | 10    | 6,890     | 10           | 0.75     | SUCCESS |
+| IDDFS        | RAND  | 10    | 7,142     | 10           | 0.83     | SUCCESS |
+
+**Observations from Table 1:**
+
+- **BFS**: All move orderings found the optimal 10-move solution. Iterations ranged from 2,618 (RDUL) to 4,848 (UDLR), showing 85% variation. Max frontier ranged from 2,824 to 5,061 states, confirming O(b^d) space complexity.
+- **DFS**: Solution lengths varied from 10-12 moves (occasionally suboptimal). Iterations extremely variable: 7,642 (RDUL) to 203,465 (DULR), demonstrating 27× variance. Max frontier constant at 15 states (depth limit), validating O(d) space complexity.
+- **IDDFS**: All orderings found optimal 10-move solution. Iterations ranged from 6,890 (LRUD) to 9,814 (UDLR). Max frontier constant at 10 states (solution depth), confirming O(d) space complexity. IDDFS performed 2× more iterations than BFS due to re-exploration (6,890 vs 3,470 for LRUD) but used 500× less memory.
+
+#### 4.3.2 Informed Search Results
+
+Table 2 shows the performance of informed search algorithms with different heuristics.
+
+**Table 2: Informed Search Performance on 10-Move Puzzle**
+
+| Algorithm    | Heuristic        | Moves | Iterations | Max Frontier | Time (s) | Status  |
+|--------------|------------------|-------|-----------|--------------|----------|---------|
+| A*           | h=0 (None)       | 10    | 4,848     | 5,061        | 0.90     | SUCCESS |
+| A*           | Manhattan        | 10    | 14        | 18           | 0.01     | SUCCESS |
+| A*           | Hamming          | 10    | 24        | 31           | 0.01     | SUCCESS |
+| Best-First   | h=0 (None)       | 10    | 4,848     | 5,061        | 0.87     | SUCCESS |
+| Best-First   | Manhattan        | 10    | 11        | 15           | 0.01     | SUCCESS |
+| Best-First   | Hamming          | 10    | 20        | 26           | 0.01     | SUCCESS |
+| SMA*         | h=0 (None)       | 10    | 4,821     | 5,143        | 1.07     | SUCCESS |
+| SMA*         | Manhattan        | 10    | 11        | 15           | 0.01     | SUCCESS |
+| SMA*         | Hamming          | 10    | 19        | 24           | 0.01     | SUCCESS |
+
+**Observations from Table 2:**
+
+- **A* with Manhattan**: 14 iterations, 18 max frontier (99.7% reduction vs BFS, 99.6% reduction in memory)
+- **A* with Hamming**: 24 iterations, 31 max frontier (71% more iterations than Manhattan, still 99.5% better than uninformed BFS)
+- **A* with h=0**: 4,848 iterations, identical to BFS, validating that A* reduces to BFS when h=0
+- **Best-First**: Manhattan variant achieved optimal solution (10 moves) with only 11 iterations, fewer than A* due to greedy nature
+- **SMA***: Performance nearly identical to A* (memory limit of 10,000 nodes never triggered on this easy puzzle)
+- **Heuristic comparison**: Manhattan distance provides superior guidance (14 iterations vs 24 for Hamming, a 42% reduction)
+
+### 4.4 Experiment 2: Medium Puzzle (20 Moves, 4×4)
+
+This experiment tested informed search algorithms on the puzzle shown in Figure 2, focusing on heuristic effectiveness and the comparison between optimal and greedy approaches.
+
+**Table 3: Informed Search Performance on 20-Move Puzzle (4×4)**
+
+| Algorithm    | Heuristic        | Moves | Iterations | Max Frontier | Time (s) | Status  |
+|--------------|------------------|-------|-----------|--------------|----------|---------|  
+| Best-First   | Manhattan        | 26    | 108       | 132          | 0.08     | SUCCESS |
+| Best-First   | Hamming          | 30    | 465       | 361          | 0.15     | SUCCESS |
+| A*           | h=0 (None)       | 20    | 2,583,816 | 2,393,992    | 425.63   | SUCCESS |
+| A*           | Manhattan        | 20    | 828       | 861          | 0.29     | SUCCESS |
+| A*           | Hamming          | 20    | 6,867     | 7,119        | 1.11     | SUCCESS |
+| SMA*         | Manhattan        | 20    | 828       | 861          | 0.33     | SUCCESS |
+| SMA*         | Hamming          | 20    | 6,867     | 7,119        | 1.35     | SUCCESS |
+
+**Observations from Table 3:**
+
+- **Best-First Search**: Fast but suboptimal. Manhattan variant found 26-move solution (30% longer than optimal) in only 0.08s. Hamming variant found 30-move solution (50% longer) with 4.3× more iterations than Manhattan.
+- **A* with Manhattan**: Optimal 20-move solution with 828 iterations and 861 max frontier. Highly efficient with strong heuristic.
+- **A* with Hamming**: Still optimal (20 moves) but required 8.3× more iterations than Manhattan (6,867 vs 828). Weaker heuristic necessitates more exploration.
+- **A* with h=0**: Optimal but extremely expensive - 2,583,816 iterations taking 425.63s (equivalent to BFS). Demonstrates absolute necessity of heuristics, performing 3,119× more iterations than A* Manhattan.
+- **SMA* performance**: Identical to A* for both heuristics (memory limit of 10,000 nodes not reached as both used ~7,000 states).
+- **Heuristic quality dominance**: Manhattan 8.3× better than Hamming, 3,119× better than h=0
+
+### 4.5 Experiment 3: Large State Space (20 Moves, 5×5)
+
+This experiment evaluated algorithm scalability using the 5×5 puzzle shown in Figure 3, revealing a counter-intuitive finding about state space size and search difficulty.
+
+**Table 4: Informed Search Performance on 20-Move Puzzle (5×5)**
+
+| Algorithm    | Heuristic        | Moves | Iterations | Max Frontier | Time (s) | Status  |
+|--------------|------------------|-------|-----------|--------------|----------|---------|  
+| Best-First   | Manhattan        | 26    | 148       | 205          | 0.08     | SUCCESS |
+| Best-First   | Hamming          | 26    | 2,425     | 1,986        | 0.41     | SUCCESS |
+| A*           | Manhattan        | 20    | 29        | 34           | 0.02     | SUCCESS |
+| A*           | Hamming          | 20    | 39        | 41           | 0.01     | SUCCESS |
+| SMA*         | Manhattan        | 20    | 29        | 34           | 0.02     | SUCCESS |
+| SMA*         | Hamming          | 20    | 39        | 41           | 0.01     | SUCCESS |
+
+**Observations from Table 4:**
+
+**Counter-Intuitive Discovery:** Despite having a much larger state space (25!/2 vs 16!/2 possible configurations), the 5×5 puzzle was dramatically easier for informed search than the 4×4 20-move puzzle (Table 3).
+
+- **A* with Manhattan**: Only 29 iterations compared to 828 for the 4×4 puzzle (96.5% reduction). Extremely efficient despite larger state space.
+- **A* with Hamming**: Only 39 iterations compared to 6,867 for the 4×4 puzzle (99.4% reduction). Even the weaker Hamming heuristic becomes highly effective.
+- **Best-First**: Suboptimal solutions (26 moves vs optimal 20) consistent with 4×4 results. Hamming variant required 16× more iterations than Manhattan (2,425 vs 148).
+- **SMA* performance**: Perfect match with A* for both heuristics (memory not constrained, frontiers of 34 and 41 well below 10,000 limit).
+- **Puzzle configuration significance**: The 5×5 puzzle proved easier because tile positions aligned favorably with Manhattan distance, creating a clearer gradient toward the goal. This demonstrates that with effective heuristics, the quality of guidance matters far more than the size of the search space.
+
+### 4.6 Experiment 4: Hard Puzzle (28 Moves, 4×4)
+
+The final experiment used the challenging puzzle shown in Figure 4, specifically designed to stress-test memory limits and demonstrate the optimality-memory trade-off in SMA*.
+
+**Table 5: Informed Search Performance on 28-Move Puzzle**
+
+| Algorithm    | Heuristic  | Moves | Iterations | Max Frontier | Time (s) | Status  |
+|--------------|------------|-------|-----------|--------------|----------|---------|  
+| Best-First   | Manhattan  | 52    | 1,839     | 1,414        | 0.59     | SUCCESS |
+| Best-First   | Hamming    | 52    | 10,500    | 8,282        | 1.64     | SUCCESS |
+| A*           | Manhattan  | 28    | 15,045    | 14,089       | 5.06     | SUCCESS |
+| A*           | Hamming    | 28    | 492,185   | 460,553      | 83.12    | SUCCESS |
+| SMA*         | Manhattan  | 28    | 15,045    | 10,000*      | 29.31    | SUCCESS |
+| SMA*         | Hamming    | 32    | 130,956   | 10,000*      | 692.39   | SUCCESS |
+
+*Note: SMA* max frontier capped at memory limit of 10,000 nodes*
+
+**Observations from Table 5:**
+
+#### 4.6.1 Performance at Memory Limits
+
+- **Best-First Search**: Highly suboptimal - found 52-move solutions (86% longer than optimal 28 moves). Manhattan variant fastest (0.59s) but demonstrates greedy failure. Hamming required 5.7× more iterations than Manhattan.
+
+- **A* with Manhattan**: Optimal 28-move solution with 15,045 iterations. Frontier of 14,089 stayed just below SMA* memory limit.
+
+- **A* with Hamming**: Still optimal but massively more expensive - 33× more iterations (492,185 vs 15,045) and 32× larger frontier (460,553 vs 14,089) compared to Manhattan. Frontier far exceeds SMA* memory limit.
+
+- **SMA* with Manhattan**: Found optimal 28-move solution with same iteration count as A* (15,045). Memory limit reached (capped at 10,000), but optimal path preserved. However, 5.8× slower than A* (29.31s vs 5.06s) due to memory management overhead.
+
+- **SMA* with Hamming**: **SUBOPTIMAL** - found 32-move solution instead of optimal 28 (14% longer). Memory constraint forced pruning of the optimal path. Demonstrated 73% reduction in iterations vs A* (130,956 vs 492,185) and 98% reduction in memory (10,000 vs 460,553), but sacrificed optimality.
+
+#### 4.6.2 Memory vs Optimality Trade-off
+
+This experiment provides clear evidence of SMA*'s fundamental trade-off between memory and optimality:
+
+**When Memory is Sufficient (Manhattan heuristic):**
+
+- SMA* finds optimal solution like A*
+- Same iteration count (15,045)
+- Slower due to memory management overhead (5.8× slower)
+- Memory limit reached but optimal path preserved
+
+**When Memory is Insufficient (Hamming heuristic):**
+
+- SMA* sacrifices optimality to maintain memory bounds
+- Suboptimal solution: 32 moves vs optimal 28 (14% longer)
+- Pruned the optimal path due to weaker heuristic guidance
+- Demonstrates graceful degradation under memory pressure
+
+**Heuristic Quality Critical for SMA*:**
+
+- Strong heuristic (Manhattan): Keeps frontier compact, enables optimality within memory limit
+- Weak heuristic (Hamming): Frontier explodes, forces suboptimal pruning
+- Manhattan 33× more efficient than Hamming for this puzzle
+
+### 4.7 Heuristic Function Comparison Across All Experiments
+
+Analyzing heuristic performance across all difficulty levels reveals consistent patterns:
+
+**Manhattan Distance Superiority:**
+
+| Puzzle Difficulty | Manhattan Iterations | Hamming Iterations | Reduction |
+|-------------------|---------------------|-------------------|-----------|
+| 10-move (4×4)     | 14                  | 24                | 42%       |
+| 20-move (4×4)     | 828                 | 6,867             | 88%       |
+| 20-move (5×5)     | 29                  | 39                | 26%       |
+| 28-move (4×4)     | 15,045              | 492,185           | 97%       |
+
+**Key Observations:**
+
+1. **Manhattan advantage grows with difficulty:** 42% reduction on easy puzzles → 97% on hard puzzles
+2. **Hamming degrades exponentially:** From 24 iterations (easy) to 492,185 (hard) - a 20,000× increase
+3. **Manhattan scales linearly:** From 14 iterations (easy) to 15,045 (hard) - a 1,000× increase
+4. **5×5 anomaly:** Both heuristics extremely effective due to favorable configuration
+
+**Why Manhattan Outperforms Hamming:**
+
+- **Manhattan:** Captures distance information (how far each tile must move)
+- **Hamming:** Binary information only (tile right or wrong)
+- **Sliding puzzles favor Manhattan:** Distance matters more than mere displacement
+- **Hamming misses guidance:** Two tiles out of place by 1 vs 5 positions appear identical
+
+**Practical Implications:**
+
+- Always use Manhattan distance for sliding puzzles when possible
+- Hamming acceptable for easy puzzles but catastrophic for hard ones
+- On 28-move puzzle: Manhattan takes 5 seconds, Hamming takes 83 seconds (16× slower)
+- SMA* with Hamming loses optimality; with Manhattan stays optimal
+
