@@ -1,0 +1,23 @@
+SUMMARY - Informed Search Algorithms on Harder Puzzle
+====================================================================================================
+Algorithm                      Moves    Iterations      Max Frontier    Time (s)     Status
+----------------------------------------------------------------------------------------------------
+Best-First h=1 (Manhattan)     26       108             132             0.08         SUCCESS
+Best-First h=2 (Hamming)       30       465             361             0.15         SUCCESS
+A* h=0 (Uninformed)            20       2,583,816       2,393,992       425.63       SUCCESS
+A* h=1 (Manhattan)             20       828             861             0.29         SUCCESS
+A* h=2 (Hamming)               20       6,867           7,119           1.11         SUCCESS
+SMA* h=1 (Manhattan)           20       819             872             0.33         SUCCESS
+SMA* h=2 (Hamming)             20       6,986           5,571           8.29         SUCCESS
+====================================================================================================
+
+PERFORMANCE ANALYSIS
+====================================================================================================
+
+Best Performance by Metric:
+----------------------------------------------------------------------------------------------------
+Fewest Iterations:  Best-First h=1 (Manhattan)     108 iterations
+Smallest Frontier:  Best-First h=1 (Manhattan)     132 states
+Fastest Time:       Best-First h=1 (Manhattan)     0.08s
+
+====================================================================================================
