@@ -32,15 +32,10 @@ def setup_logging(algorithm_name):
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
     
-    # Create console handler - output to stderr to not interfere with stdout results
-    console_handler = logging.StreamHandler(sys.stderr)
-    console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
-    
-    # Configure root logger
+    # Configure root logger - only file handler, no console output
     logging.basicConfig(
         level=logging.INFO,
-        handlers=[file_handler, console_handler],
+        handlers=[file_handler],
         force=True
     )
     
