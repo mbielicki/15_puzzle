@@ -1,0 +1,38 @@
+====================================================================================================
+SUMMARY - Informed Search Algorithms on Harder Puzzle
+====================================================================================================
+Algorithm                      Moves    Iterations      Max Frontier    Time (s)     Status
+----------------------------------------------------------------------------------------------------
+Best-First h=1 (Manhattan)     26       148             205             0.08         SUCCESS
+Best-First h=2 (Hamming)       26       2,425           1,986           0.41         SUCCESS
+A* h=1 (Manhattan)             20       29              34              0.02         SUCCESS
+A* h=2 (Hamming)               20       39              41              0.01         SUCCESS
+SMA* h=1 (Manhattan)           20       29              34              0.02         SUCCESS
+SMA* h=2 (Hamming)             20       39              41              0.01         SUCCESS
+====================================================================================================
+
+PERFORMANCE ANALYSIS
+====================================================================================================
+
+Best Performance by Metric:
+----------------------------------------------------------------------------------------------------
+Fewest Iterations:  A* h=1 (Manhattan)             29 iterations
+Smallest Frontier:  A* h=1 (Manhattan)             34 states
+Fastest Time:       A* h=2 (Hamming)               0.01s
+
+====================================================================================================
+
+Best-First Search (greedy, not optimal):
+
+Manhattan: 26 moves, 148 iterations
+Hamming: 26 moves, 2,425 iterations (much less informed for larger puzzles)
+A and SMA** (both optimal and identical):
+
+Manhattan: 20 moves (optimal), only 29 iterations, 34 max frontier - extremely efficient!
+Hamming: 20 moves (optimal), 39 iterations, 41 max frontier
+Key insights:
+
+Manhattan heuristic is dramatically better - only 29 iterations vs 2,425 for Best-First with Hamming
+A and SMA are perfectly matched** - identical performance when memory sufficient
+5x5 puzzle is actually easier than the 4x4 20-move puzzle for A* (29 vs 828 iterations with Manhattan)
+The larger state space doesn't matter when you have a strong heuristic - Manhattan guides directly to the solution

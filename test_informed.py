@@ -8,8 +8,8 @@ from utils.logging_config import setup_logging
 from utils.solver import solve_puzzle
 import time
 
-# Test on the 20-move puzzle (harder)
-puzzle_file = "inputs/puzzle_4x4_20moves.txt"
+# Test on the 5x5 20-move puzzle (harder)
+puzzle_file = "inputs/puzzle_5x5_20moves.txt"
 
 # Only informed search algorithms
 algorithms = [
